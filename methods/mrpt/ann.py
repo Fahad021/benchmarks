@@ -22,17 +22,15 @@ This class implements the Approximate K-Nearest-Neighbors benchmark.
 '''
 class MRPT_ANN(object):
   def __init__(self, method_param, run_param):
-    self.info = "MRPT_ANN ("  + str(method_param) +  ")"
+    self.info = f"MRPT_ANN ({str(method_param)})"
 
     # Assemble run model parameter.
     self.data = load_dataset(method_param["datasets"], ["csv"])
     if len(self.data) == 1:
       self.data = split_dataset(self.data[0])
 
-    self.build_dict = {}
-    self.build_dict["depth"] = 2
-    self.run_dict = {}
-    self.run_dict["votes_required"] = 1
+    self.build_dict = {"depth": 2}
+    self.run_dict = {"votes_required": 1}
     if "num_trees" in method_param:
       self.build_dict["n_trees"] = int(method_param["num_trees"])
     if "depth" in method_param:
@@ -55,6 +53,4 @@ class MRPT_ANN(object):
           neighbors[i] = index.ann(np.float32(self.data[1][i]), self.k,
           **self.run_dict)
 
-    metric = {}
-    metric["runtime"] = totalTimer.ElapsedTime()
-    return metric
+    return {"runtime": totalTimer.ElapsedTime()}

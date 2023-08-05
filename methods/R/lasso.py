@@ -22,8 +22,7 @@ class R_LASSO(object):
     # Assemble run model parameter.
     self.dataset = method_param["datasets"]
 
-    self.build_opts = {}
-    self.build_opts["lambda1"] = 0
+    self.build_opts = {"lambda1": 0}
     if "lambda1" in method_param:
       self.build_opts["lambda1"] = float(method_param["lambda1"])
 
@@ -32,7 +31,7 @@ class R_LASSO(object):
       "lasso.r" + " -t " + self.dataset[0] + " -l " +
       str(self.build_opts["lambda1"]))
 
-    self.info = "R_LASSO ("  + str(self.cmd) +  ")"
+    self.info = f"R_LASSO ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -48,10 +47,12 @@ class R_LASSO(object):
     except Exception as e:
       subprocess_exception(e, self.output)
 
-    metric = {}
-    metric["runtime"] = float(re.findall("(\d+\.\d+). *sec elapsed",
-      self.output.decode("utf-8"))[0])
-
+    metric = {
+        "runtime":
+        float(
+            re.findall("(\d+\.\d+). *sec elapsed",
+                       self.output.decode("utf-8"))[0])
+    }
     if len(self.dataset) == 3:
       predictions = load_dataset("predictions.csv", ["csv"])[0]
       predictions = predictions[1:]

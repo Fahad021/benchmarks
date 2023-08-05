@@ -22,7 +22,7 @@ This class implements the AdaBoost classifier benchmark.
 '''
 class MILK_ADABOOST(object):
   def __init__(self, method_param, run_param):
-    self.info = "MILK_ADABOOST ("  + str(method_param) +  ")"
+    self.info = f"MILK_ADABOOST ({str(method_param)})"
 
     # Assemble run model parameter.
     self.data = load_dataset(method_param["datasets"], ["csv"])
@@ -40,6 +40,4 @@ class MILK_ADABOOST(object):
     with totalTimer:
       model = model.train(self.data_split[0], self.data_split[1])
 
-    metric = {}
-    metric["runtime"] = totalTimer.ElapsedTime()
-    return metric
+    return {"runtime": totalTimer.ElapsedTime()}

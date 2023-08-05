@@ -24,9 +24,9 @@ class WEKA_ALLKNN(object):
     # Assemble run command.
     dataset = check_dataset(method_param["datasets"], ["arff"])
     if len(dataset) == 2:
-      input_cmd = "-r " + dataset[0] + " -q " + dataset[1] + " "
+      input_cmd = f"-r {dataset[0]} -q {dataset[1]} "
     else:
-      input_cmd = "-r " + dataset[0] + " "
+      input_cmd = f"-r {dataset[0]} "
 
     options = ""
     if "k" in method_param:
@@ -37,7 +37,7 @@ class WEKA_ALLKNN(object):
     self.cmd = shlex.split("java -classpath " + run_param["weka_path"] +
       "/weka.jar" + ":methods/weka" + " AllKnn " + input_cmd + " " + options)
 
-    self.info = "WEKA_ALLKNN (" + str(self.cmd) + ")"
+    self.info = f"WEKA_ALLKNN ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -54,8 +54,7 @@ class WEKA_ALLKNN(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric['runtime'] = timer["total_time"]
 
     return metric

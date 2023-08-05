@@ -46,7 +46,7 @@ class MLPACK_NCA(object):
       self.cmd = shlex.split(run_param["mlpack_path"] + "mlpack_nca -i " +
         self.dataset[0] + " -v -o distance.csv " + options)
 
-    self.info = "MLPACK_NCA (" + str(self.cmd) + ")"
+    self.info = f"MLPACK_NCA ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -63,8 +63,7 @@ class MLPACK_NCA(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric["runtime"] = timer["total_time"] - timer["loading_data"] - timer["saving_data"]
 
     return metric

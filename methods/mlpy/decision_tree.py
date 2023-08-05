@@ -15,14 +15,13 @@ This class implements the Decision Tree Classifier benchmark.
 '''
 class MLPY_DECISIONTREE(object):
   def __init__(self, method_param, run_param):
-    self.info = "MLPY_DECISIONTREE ("  + str(method_param) +  ")"
+    self.info = f"MLPY_DECISIONTREE ({str(method_param)})"
 
     # Assemble run model parameter.
     self.data = load_dataset(method_param["datasets"], ["csv"])
     self.data_split = split_dataset(self.data[0])
 
-    self.build_opts = {}
-    self.build_opts["stumps"] = 0
+    self.build_opts = {"stumps": 0}
     if "stumps" in method_param:
       self.build_opts["stumps"] = int(method_param["stumps"])
     self.build_opts["minsize"] = 1
@@ -41,9 +40,7 @@ class MLPY_DECISIONTREE(object):
       if len(self.data) >= 2:
         predictions = model.pred(self.data[1])
 
-    metric = {}
-    metric["runtime"] = totalTimer.ElapsedTime()
-
+    metric = {"runtime": totalTimer.ElapsedTime()}
     if len(self.data) == 3:
       confusionMatrix = Metrics.ConfusionMatrix(self.data[2], predictions)
       metric['ACC'] = Metrics.AverageAccuracy(confusionMatrix)

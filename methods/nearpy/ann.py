@@ -22,7 +22,7 @@ This class implements the Approximate K-Nearest-Neighbors benchmark.
 '''
 class NEARPY_ANN(object):
   def __init__(self, method_param, run_param):
-    self.info = "NEARPY_ANN ("  + str(method_param) +  ")"
+    self.info = f"NEARPY_ANN ({str(method_param)})"
 
     # Assemble run model parameter.
     self.data = load_dataset(method_param["datasets"], ["csv"])
@@ -46,6 +46,4 @@ class NEARPY_ANN(object):
       for i in range(len(self.data[1])):
           v = engine.neighbours(self.data[1][i])
 
-    metric = {}
-    metric["runtime"] = totalTimer.ElapsedTime()
-    return metric
+    return {"runtime": totalTimer.ElapsedTime()}

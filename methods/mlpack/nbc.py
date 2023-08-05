@@ -24,15 +24,12 @@ class MLPACK_NBC(object):
     # Assemble run command.
     self.dataset = check_dataset(method_param["datasets"], ["csv", "txt"])
 
-    options = ""
-    if "incremental" in method_param:
-      options = "-I"
-
+    options = "-I" if "incremental" in method_param else ""
     self.cmd = shlex.split(run_param["mlpack_path"] + "mlpack_nbc -t " +
       self.dataset[0] + " -T " + self.dataset[1] + " -v " + options + " -o " +
       "output.csv")
 
-    self.info = "MLPACK_NBC (" + str(self.cmd) + ")"
+    self.info = f"MLPACK_NBC ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -49,8 +46,7 @@ class MLPACK_NBC(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric["runtime"] = timer["total_time"] - timer["loading_data"] - timer["saving_data"]
       metric["nbc_testing"] = timer["nbc_testing"]
       metric["nbc_training"] = timer["nbc_training"]

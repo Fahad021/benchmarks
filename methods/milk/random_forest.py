@@ -23,7 +23,7 @@ This class implements the Random Forest Classifier benchmark.
 '''
 class MILK_RANDOMFOREST(object):
   def __init__(self, method_param, run_param):
-    self.info = "MILK_RANDOMFOREST ("  + str(method_param) +  ")"
+    self.info = f"MILK_RANDOMFOREST ({str(method_param)})"
 
     # Assemble run model parameter.
     self.data = load_dataset(method_param["datasets"], ["csv"])
@@ -44,6 +44,4 @@ class MILK_RANDOMFOREST(object):
     with totalTimer:
       model = model.train(self.data_split[0], self.data_split[1])
 
-    metric = {}
-    metric["runtime"] = totalTimer.ElapsedTime()
-    return metric
+    return {"runtime": totalTimer.ElapsedTime()}

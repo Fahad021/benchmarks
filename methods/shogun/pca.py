@@ -72,7 +72,7 @@ class SHOGUN_PCA(object):
   Shogun.
   '''
   def __init__(self, method_param, run_param):
-    self.info = "SHOGUN_PCA ("  + str(method_param) +  ")"
+    self.info = f"SHOGUN_PCA ({str(method_param)})"
 
     # Assemble run model parameters.
     self.data = load_dataset(method_param["datasets"], ["csv"])
@@ -164,7 +164,4 @@ class SHOGUN_PCA(object):
       prep.init(self.data_feat)
       prep.apply_to_feature_matrix(self.data_feat)
 
-    metric = {}
-    metric["runtime"] = totalTimer.ElapsedTime()
-
-    return metric
+    return {"runtime": totalTimer.ElapsedTime()}

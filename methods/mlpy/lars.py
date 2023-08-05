@@ -22,7 +22,7 @@ This class implements the Least Angle Regression benchmark.
 '''
 class MLPY_LARS(object):
   def __init__(self, method_param, run_param):
-    self.info = "MLPY_LARS ("  + str(method_param) +  ")"
+    self.info = f"MLPY_LARS ({str(method_param)})"
 
     # Assemble run model parameter.
     self.data = load_dataset(method_param["datasets"], ["csv"])
@@ -39,6 +39,4 @@ class MLPY_LARS(object):
       model.learn(self.data[0], self.data[1])
       output = model.beta()
 
-    metric = {}
-    metric["runtime"] = totalTimer.ElapsedTime()
-    return metric
+    return {"runtime": totalTimer.ElapsedTime()}

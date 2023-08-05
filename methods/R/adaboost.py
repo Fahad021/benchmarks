@@ -22,8 +22,7 @@ class R_ADABOOST(object):
     # Assemble run model parameter.
     self.dataset = method_param["datasets"]
 
-    self.build_opts = {}
-    self.build_opts["max_iterations"] = 100
+    self.build_opts = {"max_iterations": 100}
     if "max_iterations" in method_param:
       self.build_opts["max_iterations"] = int(method_param["max_iterations"])
 
@@ -31,7 +30,7 @@ class R_ADABOOST(object):
       "adaboost.r" + " -t " + self.dataset[0] + " -T " + self.dataset[1] +
       " -m " + str(self.build_opts["max_iterations"]))
 
-    self.info = "R_ADABOOST ("  + str(self.cmd) +  ")"
+    self.info = f"R_ADABOOST ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -47,10 +46,12 @@ class R_ADABOOST(object):
     except Exception as e:
       subprocess_exception(e, self.output)
 
-    metric = {}
-    metric["runtime"] = float(re.findall("(\d+\.\d+). *sec elapsed",
-      self.output.decode("utf-8"))[0])
-
+    metric = {
+        "runtime":
+        float(
+            re.findall("(\d+\.\d+). *sec elapsed",
+                       self.output.decode("utf-8"))[0])
+    }
     if len(self.dataset) == 3:
       predictions = load_dataset("predictions.csv", ["csv"])[0]
       predictions = predictions[1:]

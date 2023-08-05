@@ -22,8 +22,7 @@ class R_DTC(object):
     # Assemble run model parameter.
     self.dataset = method_param["datasets"]
 
-    self.build_opts = {}
-    self.build_opts["max_depth"] = 30
+    self.build_opts = {"max_depth": 30}
     if "max_depth" in method_param:
       self.build_opts["max_depth"] = int(method_param["max_depth"])
     self.build_opts["min_samples_split"] = 20
@@ -37,7 +36,7 @@ class R_DTC(object):
       str(self.build_opts["max_depth"]) + " -ms " +
       str(self.build_opts["min_samples_split"]) )
 
-    self.info = "R_DTC ("  + str(self.cmd) +  ")"
+    self.info = f"R_DTC ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -53,10 +52,12 @@ class R_DTC(object):
     except Exception as e:
       subprocess_exception(e, self.output)
 
-    metric = {}
-    metric["runtime"] = float(re.findall("(\d+\.\d+). *sec elapsed",
-      self.output.decode("utf-8"))[0])
-
+    metric = {
+        "runtime":
+        float(
+            re.findall("(\d+\.\d+). *sec elapsed",
+                       self.output.decode("utf-8"))[0])
+    }
     if len(self.dataset) == 3:
       predictions = load_dataset("predictions.csv", ["csv"])[0]
       predictions = predictions[1:]

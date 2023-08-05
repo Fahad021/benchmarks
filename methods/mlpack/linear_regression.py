@@ -32,7 +32,7 @@ class MLPACK_LINEARREGRESSION(object):
       self.cmd = shlex.split(run_param["mlpack_path"] +
         "mlpack_linear_regression -t " + self.dataset[0] + " -v")
 
-    self.info = "MLPACK_LINEARREGRESSION (" + str(self.cmd) + ")"
+    self.info = f"MLPACK_LINEARREGRESSION ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -49,8 +49,7 @@ class MLPACK_LINEARREGRESSION(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric["runtime"] = timer["regression"]
 
     return metric

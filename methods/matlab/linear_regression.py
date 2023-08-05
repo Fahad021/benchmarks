@@ -25,16 +25,16 @@ class MATLAB_LINEARREGRESSION(object):
     dataset = method_param["datasets"]
 
     if len(dataset) == 2:
-      inputCmd = "-i " + dataset[0] + " -t " + dataset[1]
+      inputCmd = f"-i {dataset[0]} -t {dataset[1]}"
     else:
-      inputCmd = "-i " + dataset[0] + " "
+      inputCmd = f"-i {dataset[0]} "
 
     # Split the command using shell-like syntax.
     self.cmd = shlex.split(run_param["matlab_path"] +
       "matlab -nodisplay -nosplash -r \"try, " + "LINEAR_REGRESSION('" +
       inputCmd + "'), catch, exit(1), end, exit(0)\"")
 
-    self.info = "MATLAB_LINEARREGRESSION (" + str(self.cmd) + ")"
+    self.info = f"MATLAB_LINEARREGRESSION ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -51,8 +51,7 @@ class MATLAB_LINEARREGRESSION(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric["runtime"] = timer["total_time"]
 
     return metric

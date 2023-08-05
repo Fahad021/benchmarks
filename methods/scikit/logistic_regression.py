@@ -22,7 +22,7 @@ This class implements the Logistic Regression benchmark.
 '''
 class SCIKIT_LOGISTICREGRESSION(object):
   def __init__(self, method_param, run_param):
-    self.info = "SCIKIT_LOGISTICREGRESSION ("  + str(method_param) +  ")"
+    self.info = f"SCIKIT_LOGISTICREGRESSION ({str(method_param)})"
 
     # Assemble run model parameter.
     self.data = load_dataset(method_param["datasets"], ["csv"])
@@ -49,9 +49,7 @@ class SCIKIT_LOGISTICREGRESSION(object):
         predictions = model.predict(self.data[1])
         b = model.coef_
 
-    metric = {}
-    metric["runtime"] = totalTimer.ElapsedTime()
-
+    metric = {"runtime": totalTimer.ElapsedTime()}
     if len(self.data) == 3:
       confusionMatrix = Metrics.ConfusionMatrix(self.data[2], predictions)
       metric['ACC'] = Metrics.AverageAccuracy(confusionMatrix)

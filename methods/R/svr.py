@@ -22,8 +22,7 @@ class R_SVR(object):
     # Assemble run model parameter.
     self.dataset = method_param["datasets"]
 
-    opts = {}
-    opts["kernel"] = 'radial'
+    opts = {"kernel": 'radial'}
     if "kernel" in method_param:
       opts["kernel"] = str(method_param["kernel"])
     opts["C"] = 1.0
@@ -41,7 +40,7 @@ class R_SVR(object):
       str(opts["C"]) + " -e " + str(opts["epsilon"]) + " -g " +
       str(opts["gamma"]))
 
-    self.info = "R_SVR ("  + str(self.cmd) +  ")"
+    self.info = f"R_SVR ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -57,8 +56,9 @@ class R_SVR(object):
     except Exception as e:
       subprocess_exception(e, self.output)
 
-    metric = {}
-    metric["runtime"] = float(re.findall("(\d+\.\d+). *sec elapsed",
-      self.output.decode("utf-8"))[0])
-
-    return metric
+    return {
+        "runtime":
+        float(
+            re.findall("(\d+\.\d+). *sec elapsed",
+                       self.output.decode("utf-8"))[0])
+    }

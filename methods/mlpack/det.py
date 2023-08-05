@@ -37,7 +37,7 @@ class MLPACK_DET(object):
       self.cmd = shlex.split(run_param["mlpack_path"] + "mlpack_det -t " +
         self.dataset[0] + " -v " + options)
 
-    self.info = "MLPACK_DET (" + str(self.cmd) + ")"
+    self.info = f"MLPACK_DET ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -54,8 +54,7 @@ class MLPACK_DET(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric["runtime"] = timer["total_time"] - timer["loading_data"]
       metric["det_training"] = timer["det_training"]
 

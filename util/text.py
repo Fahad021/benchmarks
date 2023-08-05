@@ -29,10 +29,7 @@ class Driver(object):
 
   def update(self, library, method, datasets, method_param, base_param, result):
     with open(self.file, "a+") as f:
-      runtime = 0
-      if "runtime" in result:
-        runtime = result["runtime"]
-
+      runtime = result["runtime"] if "runtime" in result else 0
       f.write('%s;%s;%s;%s;%s;%s;%s;%s;\n' % (self.build, str(library),
         str(datasets), str(method), str(method_param), str(base_param),
         runtime, str(result)))

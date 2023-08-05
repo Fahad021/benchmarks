@@ -23,19 +23,18 @@ class MATLAB_DTC(object):
     # Assemble run command.
     self.dataset = method_param["datasets"]
 
-    self.build_opts = {}
-    self.build_opts["min_leaf_size"] = 1
+    self.build_opts = {"min_leaf_size": 1}
     if "minimum_leaf_size" in method_param:
       self.build_opts["min_leaf_size"] = int(method_param["minimum_leaf_size"])
 
-    input_cmd = "-t " + self.dataset[0] + " -T " + self.dataset[1] + " -m "
+    input_cmd = f"-t {self.dataset[0]} -T {self.dataset[1]} -m "
     input_cmd += str(self.build_opts["min_leaf_size"])
 
     self.cmd = shlex.split(run_param["matlab_path"] +
       "matlab -nodisplay -nosplash -r \"try, DTC('" + input_cmd +
       "'), catch, exit(1), end, exit(0)\"")
 
-    self.info = "MATLAB_DTC (" + str(self.cmd) + ")"
+    self.info = f"MATLAB_DTC ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -52,8 +51,7 @@ class MATLAB_DTC(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric["runtime"] = timer["total_time"]
 
       if len(self.dataset) > 2:

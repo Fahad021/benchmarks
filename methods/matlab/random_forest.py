@@ -30,15 +30,15 @@ class MATLAB_RANDOMFOREST(object):
       self.build_opts["min_leaf_size"] = int(method_param["minimum_leaf_size"])
 
 
-    inputCmd = "-t " + self.dataset[0] + " -T " + self.dataset[1] + " -m " + \
-      str(self.build_opts["min_leaf_size"]) + " -n " + \
-      str(self.build_opts["n_estimators"])
+    inputCmd = ((f"-t {self.dataset[0]} -T {self.dataset[1]} -m " +
+                 str(self.build_opts["min_leaf_size"])) + " -n ") + str(
+                     self.build_opts["n_estimators"])
 
     self.cmd = shlex.split(run_param["matlab_path"] +
       "matlab -nodisplay -nosplash -r \"try, RANDOMFOREST('" + inputCmd +
       "'), catch, exit(1), end, exit(0)\"")
 
-    self.info = "MATLAB_RANDOMFOREST (" + str(self.cmd) + ")"
+    self.info = f"MATLAB_RANDOMFOREST ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -55,8 +55,7 @@ class MATLAB_RANDOMFOREST(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric["runtime"] = timer["total_time"]
 
       if len(self.dataset) > 2:

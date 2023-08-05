@@ -22,13 +22,12 @@ This class implements the K-Means Clustering benchmark.
 '''
 class MILK_KMEANS(object):
   def __init__(self, method_param, run_param):
-    self.info = "MLPY_KMEANS ("  + str(method_param) +  ")"
+    self.info = f"MLPY_KMEANS ({str(method_param)})"
 
     # Assemble run model parameter.
     self.data = load_dataset(method_param["datasets"], ["csv"])
 
-    self.build_opts = {}
-    self.build_opts["return_centroids"] = True
+    self.build_opts = {"return_centroids": True}
     self.clusters = 0
     if "clusters" in method_param:
       self.clusters = int(method_param["clusters"])
@@ -42,12 +41,7 @@ class MILK_KMEANS(object):
   def metric(self):
     totalTimer = Timer()
     with totalTimer:
-      if len(self.data) == 1:
-        assignments = kmeans(self.data[0], self.clusters, **self.build_opts)
-      else:
+      if len(self.data) != 1:
         self.build_opts["centroids"] = self.data[1]
-        assignments = kmeans(self.data[0], self.clusters, **self.build_opts)
-
-    metric = {}
-    metric["runtime"] = totalTimer.ElapsedTime()
-    return metric
+      assignments = kmeans(self.data[0], self.clusters, **self.build_opts)
+    return {"runtime": totalTimer.ElapsedTime()}

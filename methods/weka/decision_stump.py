@@ -26,7 +26,7 @@ class WEKA_DECISSIONSTUMP(object):
       "/weka.jar" + ":methods/weka" + " DECISIONSTUMP -t " + self.dataset[0] +
       " -T " + self.dataset[1])
 
-    self.info = "WEKA_DECISSIONSTUMP (" + str(self.cmd) + ")"
+    self.info = f"WEKA_DECISSIONSTUMP ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -43,8 +43,7 @@ class WEKA_DECISSIONSTUMP(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric['runtime'] = timer["total_time"]
 
     if len(self.dataset) >= 3:

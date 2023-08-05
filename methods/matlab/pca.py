@@ -28,14 +28,14 @@ class MATLAB_PCA(object):
     if "new_dimensionality" in method_param:
       optionsStr = "-d " + str(method_param["new_dimensionality"])
     if "scaling" in method_param:
-      optionsStr = optionsStr + " -s"
+      optionsStr += " -s"
 
-    inputCmd = "-i " + self.dataset[0] + " " + optionsStr
+    inputCmd = f"-i {self.dataset[0]} {optionsStr}"
     self.cmd = shlex.split(run_param["matlab_path"] +
       "matlab -nodisplay -nosplash -r \"try, PCA('" + inputCmd +
       "'), catch, exit(1), end, exit(0)\"")
 
-    self.info = "MATLAB_PCA (" + str(self.cmd) + ")"
+    self.info = f"MATLAB_PCA ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -52,8 +52,7 @@ class MATLAB_PCA(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric["runtime"] = timer["total_time"]
 
     return metric

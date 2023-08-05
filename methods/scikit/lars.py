@@ -22,7 +22,7 @@ This class implements the Least Angle Regression benchmark.
 '''
 class SCIKIT_LARS(object):
   def __init__(self, method_param, run_param):
-    self.info = "SCIKIT_LARS ("  + str(method_param) +  ")"
+    self.info = f"SCIKIT_LARS ({str(method_param)})"
 
     # Assemble run model parameter.
     self.data = load_dataset(method_param["datasets"], ["csv"])
@@ -45,7 +45,4 @@ class SCIKIT_LARS(object):
       model.fit(self.data[0], self.data[1])
       out = model.coef_
 
-    metric = {}
-    metric["runtime"] = totalTimer.ElapsedTime()
-
-    return metric
+    return {"runtime": totalTimer.ElapsedTime()}

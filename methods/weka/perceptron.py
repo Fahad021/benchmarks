@@ -22,8 +22,7 @@ class WEKA_PERCEPTRON(object):
     # Assemble run command.
     self.dataset = check_dataset(method_param["datasets"], ["arff"])
 
-    opts = {}
-    opts["max_iterations"] = 500
+    opts = {"max_iterations": 500}
     if "max_iterations" in method_param:
       opts["max_iterations"] = int(method_param["max_iterations"])
 
@@ -32,7 +31,7 @@ class WEKA_PERCEPTRON(object):
       "/weka.jar" + ":methods/weka" + " PERCEPTRON -t " + self.dataset[0] +
       " -T " + self.dataset[1] + " - N " + str(opts["max_iterations"]))
 
-    self.info = "WEKA_PERCEPTRON (" + str(self.cmd) + ")"
+    self.info = f"WEKA_PERCEPTRON ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -49,8 +48,7 @@ class WEKA_PERCEPTRON(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric['runtime'] = timer["total_time"]
 
     if len(self.dataset) >= 3:

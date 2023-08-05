@@ -42,7 +42,7 @@ class MLPACK_LOGISTICRESSION(object):
       self.cmd = shlex.split(run_param["mlpack_path"] +
         "mlpack_logistic_regression -t " + self.dataset[0] + " -v " + options)
 
-    self.info = "MLPACK_LOGISTICRESSION (" + str(self.cmd) + ")"
+    self.info = f"MLPACK_LOGISTICRESSION ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -59,8 +59,7 @@ class MLPACK_LOGISTICRESSION(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric["runtime"] = timer["total_time"] - timer["loading_data"] - timer["saving_data"]
 
     if len(self.dataset) >= 3:

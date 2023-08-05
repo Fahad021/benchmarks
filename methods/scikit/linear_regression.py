@@ -22,7 +22,7 @@ This class implements the Linear Regression benchmark.
 '''
 class SCIKIT_LINEARREGRESSION(object):
   def __init__(self, method_param, run_param):
-    self.info = "SCIKIT_LINEARREGRESSION ("  + str(method_param) +  ")"
+    self.info = f"SCIKIT_LINEARREGRESSION ({str(method_param)})"
 
     # Assemble run model parameter.
     self.data = load_dataset(method_param["datasets"], ["csv"])
@@ -40,9 +40,7 @@ class SCIKIT_LINEARREGRESSION(object):
       if len(self.data) >= 2:
         predictions = model.predict(self.data[1])
 
-    metric = {}
-    metric["runtime"] = totalTimer.ElapsedTime()
-
+    metric = {"runtime": totalTimer.ElapsedTime()}
     if len(self.data) == 3:
       metric['MSE'] = Metrics.SimpleMeanSquaredError(self.data[2], predictions)
 

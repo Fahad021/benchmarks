@@ -66,7 +66,7 @@ class SHOGUN_KMEANS(object):
   Shogun.
   '''
   def __init__(self, method_param, run_param):
-    self.info = "SHOGUN_KMEANS ("  + str(method_param) +  ")"
+    self.info = f"SHOGUN_KMEANS ({str(method_param)})"
 
     # Assemble run model parameter.
     self.data = load_dataset(method_param["datasets"], ["csv"])
@@ -166,7 +166,4 @@ class SHOGUN_KMEANS(object):
       labels = model.apply().get_labels()
       centers = model.get_cluster_centers()
 
-    metric = {}
-    metric["runtime"] = totalTimer.ElapsedTime()
-
-    return metric
+    return {"runtime": totalTimer.ElapsedTime()}

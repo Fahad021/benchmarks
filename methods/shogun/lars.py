@@ -53,7 +53,7 @@ class SHOGUN_LARS(object):
   Shogun.
   '''
   def __init__(self, method_param, run_param):
-    self.info = "SHOGUN_LARS ("  + str(method_param) +  ")"
+    self.info = f"SHOGUN_LARS ({str(method_param)})"
 
     # Assemble run model parameter.
     self.data = load_dataset(method_param["datasets"], ["csv"])
@@ -141,9 +141,7 @@ class SHOGUN_LARS(object):
       if len(self.data) >= 2:
         predictions = model.apply(preprocessed_test_features).get_labels()
 
-    metric = {}
-    metric["runtime"] = totalTimer.ElapsedTime()
-
+    metric = {"runtime": totalTimer.ElapsedTime()}
     if len(self.data) >= 3:
       confusionMatrix = Metrics.ConfusionMatrix(self.data[2], predictions)
       metric['ACC'] = Metrics.AverageAccuracy(confusionMatrix)

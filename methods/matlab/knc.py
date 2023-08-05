@@ -27,14 +27,14 @@ class MATLAB_KNC(object):
     if "k" in method_param:
       self.opts["n_neighbors"] = int(method_param["k"])
 
-    inputCmd = "-t " + self.dataset[0] + " -T " + self.dataset[1] + " -k " + \
-        str(self.opts["n_neighbors"])
+    inputCmd = f"-t {self.dataset[0]} -T {self.dataset[1]} -k " + str(
+        self.opts["n_neighbors"])
 
     self.cmd = shlex.split(run_param["matlab_path"] +
       "matlab -nodisplay -nosplash -r \"try, KNC('" + inputCmd +
       "'), catch, exit(1), end, exit(0)\"")
 
-    self.info = "MATLAB_KNC (" + str(self.cmd) + ")"
+    self.info = f"MATLAB_KNC ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -51,8 +51,7 @@ class MATLAB_KNC(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric["runtime"] = timer["total_time"]
 
       if len(self.dataset) > 2:

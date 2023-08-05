@@ -32,7 +32,7 @@ class WEKA_LINEARREGRESSION(object):
       self.cmd = shlex.split("java -classpath " + run_param["weka_path"] +
         "/weka.jar" + ":methods/weka" + " LinearRegression -i " + dataset[0])
 
-    self.info = "WEKA_LINEARREGRESSION (" + str(self.cmd) + ")"
+    self.info = f"WEKA_LINEARREGRESSION ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -49,8 +49,7 @@ class WEKA_LINEARREGRESSION(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric['runtime'] = timer["total_time"]
 
     return metric

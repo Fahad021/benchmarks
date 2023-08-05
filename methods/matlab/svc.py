@@ -23,22 +23,22 @@ class MATLAB_SVC(object):
     # Assemble run command.
     self.dataset = method_param["datasets"]
 
-    self.opts = {}
-    self.opts["kernel"] = 'rbf'
+    self.opts = {"kernel": 'rbf'}
     if "kernel" in method_param:
       self.opts["kernel"] = str(method_param["kernel"])
     self.opts["max_iter"] = 1000
     if "max_iterations" in method_param:
       self.opts["max_iter"] = int(method_param["max_iterations"])
 
-    inputCmd = "-t " + self.dataset[0] + " -T " + self.dataset[1] + " -k " + \
-    self.opts["kernel"] + " --max_iter "+ str(self.opts["max_iter"])
+    inputCmd = (
+        (f"-t {self.dataset[0]} -T {self.dataset[1]} -k " + self.opts["kernel"])
+        + " --max_iter ") + str(self.opts["max_iter"])
     # Split the command using shell-like syntax.
     self.cmd = shlex.split(run_param["matlab_path"] +
       "matlab -nodisplay -nosplash -r \"try, SVC('" + inputCmd +
       "'), catch, exit(1), end, exit(0)\"")
 
-    self.info = "MATLAB_SVC (" + str(self.cmd) + ")"
+    self.info = f"MATLAB_SVC ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -55,8 +55,7 @@ class MATLAB_SVC(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric["runtime"] = timer["total_time"]
 
       if len(self.dataset) > 2:

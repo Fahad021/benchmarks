@@ -22,7 +22,7 @@ This class implements the K-Nearest-Neighbors benchmark.
 '''
 class SCIKIT_KNN(object):
   def __init__(self, method_param, run_param):
-    self.info = "SCIKIT_KNN ("  + str(method_param) +  ")"
+    self.info = f"SCIKIT_KNN ({str(method_param)})"
 
     # Assemble run model parameter.
     self.data = load_dataset(method_param["datasets"], ["csv"])
@@ -67,7 +67,4 @@ class SCIKIT_KNN(object):
         out = model.kneighbors(self.data[0], self.build_opts["n_neighbors"] + 1,
           return_distance=True)
 
-    metric = {}
-    metric["runtime"] = totalTimer.ElapsedTime()
-
-    return metric
+    return {"runtime": totalTimer.ElapsedTime()}

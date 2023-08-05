@@ -22,7 +22,7 @@ This class implements the Principal Components Analysis benchmark.
 '''
 class MLPY_PCA(object):
   def __init__(self, method_param, run_param):
-    self.info = "MLPY_PCA ("  + str(method_param) +  ")"
+    self.info = f"MLPY_PCA ({str(method_param)})"
 
     # Assemble run model parameter.
     self.data = load_dataset(method_param["datasets"], ["csv"])
@@ -44,6 +44,4 @@ class MLPY_PCA(object):
       model.learn(self.data[0])
       out = model.transform(self.data[0], self.k)
 
-    metric = {}
-    metric["runtime"] = totalTimer.ElapsedTime()
-    return metric
+    return {"runtime": totalTimer.ElapsedTime()}

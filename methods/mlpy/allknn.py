@@ -22,7 +22,7 @@ This class implements the All K-Nearest-Neighbors benchmark.
 '''
 class MLPY_ALLKNN(object):
   def __init__(self, method_param, run_param):
-    self.info = "MLPY_ALLKNN ("  + str(method_param) +  ")"
+    self.info = f"MLPY_ALLKNN ({str(method_param)})"
 
     # Assemble run model parameter.
     self.data = load_dataset(method_param["datasets"], ["csv"])
@@ -42,6 +42,4 @@ class MLPY_ALLKNN(object):
       model = mlpy.KNN(**self.build_opts)
       model.learn(self.data[0], self.data[1])
 
-    metric = {}
-    metric["runtime"] = totalTimer.ElapsedTime()
-    return metric
+    return {"runtime": totalTimer.ElapsedTime()}

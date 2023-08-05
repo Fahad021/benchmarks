@@ -35,7 +35,7 @@ class MLPACK_LARS(object):
     self.cmd = shlex.split(run_param["mlpack_path"] + "mlpack_lars -i " +
       self.dataset[0] + " -r " + self.dataset[1] + " -v " + options)
 
-    self.info = "MLPACK_LARS (" + str(self.cmd) + ")"
+    self.info = f"MLPACK_LARS ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -52,8 +52,7 @@ class MLPACK_LARS(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric["runtime"] = timer["lars_regression"]
 
     return metric

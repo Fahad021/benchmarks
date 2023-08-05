@@ -22,14 +22,13 @@ This class implements the k-nearest neighbors Classifier benchmark.
 '''
 class MLPY_KNC(object):
   def __init__(self, method_param, run_param):
-    self.info = "MLPY_KNC ("  + str(method_param) +  ")"
+    self.info = f"MLPY_KNC ({str(method_param)})"
 
     # Assemble run model parameter.
     self.data = load_dataset(method_param["datasets"], ["csv"])
     self.data_split = split_dataset(self.data[0])
 
-    self.build_opts = {}
-    self.build_opts["k"] = self.data[0].shape[1]
+    self.build_opts = {"k": self.data[0].shape[1]}
     if "k" in method_param:
       self.build_opts["k"] = int(method_param["k"])
 
@@ -45,9 +44,7 @@ class MLPY_KNC(object):
       if len(self.data) >= 2:
         predictions = model.pred(self.data[1])
 
-    metric = {}
-    metric["runtime"] = totalTimer.ElapsedTime()
-
+    metric = {"runtime": totalTimer.ElapsedTime()}
     if len(self.data) == 3:
       confusionMatrix = Metrics.ConfusionMatrix(self.data[2], predictions)
       metric['ACC'] = Metrics.AverageAccuracy(confusionMatrix)

@@ -24,14 +24,11 @@ class MLPACK_EMST(object):
     # Assemble run command.
     self.dataset = check_dataset(method_param["datasets"], ["csv", "txt"])
 
-    options = ""
-    if "naive_mode" in method_param:
-      options = "-N"
-
+    options = "-N" if "naive_mode" in method_param else ""
     self.cmd = shlex.split(run_param["mlpack_path"] + "mlpack_emst -i " +
       self.dataset[0] + " -v " + options)
 
-    self.info = "MLPACK_EMST (" + str(self.cmd) + ")"
+    self.info = f"MLPACK_EMST ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -48,8 +45,7 @@ class MLPACK_EMST(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric["runtime"] = timer["total_time"] - timer["loading_data"]
       metric["tree_building"] = timer["tree_building"]
 

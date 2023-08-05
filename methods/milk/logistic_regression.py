@@ -22,7 +22,7 @@ This class implements the Logistic Regression Classifier benchmark.
 '''
 class MILK_LOGISTICREGRESSION(object):
   def __init__(self, method_param, run_param):
-    self.info = "MILK_LOGISTICREGRESSION ("  + str(method_param) +  ")"
+    self.info = f"MILK_LOGISTICREGRESSION ({str(method_param)})"
 
     # Assemble run model parameter.
     self.data = load_dataset(method_param["datasets"], ["csv"])
@@ -41,9 +41,7 @@ class MILK_LOGISTICREGRESSION(object):
       if len(self.data) >= 2:
         predictions = np.greater(self.model.apply(self.data[1]), 0.5)
 
-    metric = {}
-    metric["runtime"] = totalTimer.ElapsedTime()
-
+    metric = {"runtime": totalTimer.ElapsedTime()}
     if len(self.data) == 3:
       confusionMatrix = Metrics.ConfusionMatrix(self.data[2], predictions)
       metric['ACC'] = Metrics.AverageAccuracy(confusionMatrix)

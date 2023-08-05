@@ -21,7 +21,7 @@ This class implements the Approximate K-Nearest-Neighbors benchmark.
 '''
 class ANNOY_ANN(object):
   def __init__(self, method_param, run_param):
-    self.info = "ANNOY_ANN ("  + str(method_param) +  ")"
+    self.info = f"ANNOY_ANN ({str(method_param)})"
 
     # Assemble run model parameter.
     self.data = load_dataset(method_param["datasets"], ["csv"])
@@ -46,6 +46,4 @@ class ANNOY_ANN(object):
       for i in range(len(self.data[1])):
           v = t.get_nns_by_vector(self.data[1][i], self.build_opts["k"])
 
-    metric = {}
-    metric["runtime"] = totalTimer.ElapsedTime()
-    return metric
+    return {"runtime": totalTimer.ElapsedTime()}

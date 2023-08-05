@@ -23,7 +23,7 @@ class DLIBML_SVM(object):
     self.cmd = run_param["dlibml_path"] + "dlibml_svm"
     if "datasets" in method_param:
       self.dataset = check_dataset(method_param["datasets"], ["csv", "txt"])
-      self.cmd += " -t " + self.dataset[0] + " -T " + self.dataset[1]
+      self.cmd += f" -t {self.dataset[0]} -T {self.dataset[1]}"
 
     if "kernel" in method_param:
       self.cmd += " -k " + str(method_param["kernel"])
@@ -46,7 +46,7 @@ class DLIBML_SVM(object):
       self.cmd += " -d " + "2"
     self.cmd += " -v"
 
-    self.info = "DLIBML_SVM (" + self.cmd + ")"
+    self.info = f"DLIBML_SVM ({self.cmd})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -63,8 +63,7 @@ class DLIBML_SVM(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric["runtime"] = timer["runtime"]
 
     if len(self.dataset) > 2:

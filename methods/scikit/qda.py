@@ -22,7 +22,7 @@ This class implements the Quadratic Discriminant Analysis benchmark.
 '''
 class SCIKIT_QDA(object):
   def __init__(self, method_param, run_param):
-    self.info = "SCIKIT_QDA ("  + str(method_param) +  ")"
+    self.info = f"SCIKIT_QDA ({str(method_param)})"
 
     # Assemble run model parameter.
     self.data = load_dataset(method_param["datasets"], ["csv"])
@@ -40,9 +40,7 @@ class SCIKIT_QDA(object):
       if len(self.data) >= 2:
         predictions = model.predict(self.data[1])
 
-    metric = {}
-    metric["runtime"] = totalTimer.ElapsedTime()
-
+    metric = {"runtime": totalTimer.ElapsedTime()}
     if len(self.data) == 3:
       confusionMatrix = Metrics.ConfusionMatrix(self.data[2], predictions)
       metric['ACC'] = Metrics.AverageAccuracy(confusionMatrix)

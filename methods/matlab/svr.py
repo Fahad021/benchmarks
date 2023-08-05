@@ -22,8 +22,7 @@ class MATLAB_SVR(object):
     # Assemble run command.
     self.dataset = method_param["datasets"]
 
-    self.opts = {}
-    self.opts["kernel"] = 'rbf'
+    self.opts = {"kernel": 'rbf'}
     if "kernel" in method_param:
       self.opts["kernel"] = str(method_param["kernel"])
     self.opts["max_iter"] = 1000
@@ -33,13 +32,14 @@ class MATLAB_SVR(object):
     if "epsilon" in method_param:
       self.opts["epsilon"] = float(method_param["epsilon"])
 
-    inputCmd = "-t " + self.dataset[0] + " -T " + self.dataset[1] + " -k " + \
-    self.opts["kernel"] + " --max_iter "+ str(self.opts["max_iter"])
+    inputCmd = (
+        (f"-t {self.dataset[0]} -T {self.dataset[1]} -k " + self.opts["kernel"])
+        + " --max_iter ") + str(self.opts["max_iter"])
     self.cmd = shlex.split(run_param["matlab_path"] +
       "matlab -nodisplay -nosplash -r \"try, SVR('" + inputCmd +
       "'), catch, exit(1), end, exit(0)\"")
 
-    self.info = "MATLAB_SVR (" + str(self.cmd) + ")"
+    self.info = f"MATLAB_SVR ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -56,8 +56,7 @@ class MATLAB_SVR(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric["runtime"] = timer["total_time"]
 
       if len(self.dataset) > 2:

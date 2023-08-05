@@ -35,16 +35,15 @@ class MATLAB_ALLKNN(object):
       self.cmd += " -l " + str(method_param["leaf_size"])
 
     if len(dataset) == 2:
-      self.cmd = "-r " + dataset[0] + " -q " + dataset[1] + " " \
-          + self.cmd
+      self.cmd = f"-r {dataset[0]} -q {dataset[1]} {self.cmd}"
     else:
-      self.cmd = "-r " + dataset[0] + " " + self.cmd
+      self.cmd = f"-r {dataset[0]} {self.cmd}"
 
     self.cmd = shlex.split(run_param["matlab_path"] +
       "matlab -nodisplay -nosplash -r \"try, " + "ALLKNN('"  +
       self.cmd + "'), catch, exit(1), end, exit(0)\"")
 
-    self.info = "MATLAB_ALLKNN (" + str(self.cmd) + ")"
+    self.info = f"MATLAB_ALLKNN ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -61,8 +60,7 @@ class MATLAB_ALLKNN(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric["runtime"] = timer["total_time"]
 
     return metric

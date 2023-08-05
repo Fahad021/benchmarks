@@ -24,12 +24,12 @@ class MATLAB_NBC(object):
     # Assemble run command.
     self.dataset = method_param["datasets"]
 
-    inputCmd = "-t " + self.dataset[0] + " -T " + self.dataset[1]
+    inputCmd = f"-t {self.dataset[0]} -T {self.dataset[1]}"
     self.cmd = shlex.split(run_param["matlab_path"] +
       "matlab -nodisplay -nosplash -r \"try, NBC('" + inputCmd +
       "'), catch, exit(1), end, exit(0)\"")
 
-    self.info = "MATLAB_NBC (" + str(self.cmd) + ")"
+    self.info = f"MATLAB_NBC ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -46,8 +46,7 @@ class MATLAB_NBC(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric["runtime"] = timer["total_time"]
 
       if len(self.dataset) > 2:

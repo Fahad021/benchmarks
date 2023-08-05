@@ -50,7 +50,7 @@ class SHOGUN_LDA(object):
   Shogun.
   '''
   def __init__(self, method_param, run_param):
-    self.info = "SHOGUN_LDA ("  + str(method_param) +  ")"
+    self.info = f"SHOGUN_LDA ({str(method_param)})"
 
     # Assemble run model parameter.
     self.data = load_dataset(method_param["datasets"], ["csv"])
@@ -98,7 +98,7 @@ class SHOGUN_LDA(object):
     with totalTimer:
       model = MCLDA(self.train_feat, self.train_labels, self.tolerance,
         self.store_cov)
-      
+
       if self.solver == "auto":
         model.set_solver_type(ST_AUTO)
 
@@ -128,9 +128,7 @@ class SHOGUN_LDA(object):
       if len(self.data) >= 2:
         predictions = model.apply_multiclass(self.test_feat).get_labels()
 
-    metric = {}
-    metric["runtime"] = totalTimer.ElapsedTime()
-
+    metric = {"runtime": totalTimer.ElapsedTime()}
     if len(self.data) >= 2:
       predictions = label_decoder(predictions, self.label_map)
 

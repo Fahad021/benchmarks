@@ -50,7 +50,7 @@ class SHOGUN_LINEARRIDGEREGRESSION(object):
   Shogun.
   '''
   def __init__(self, method_param, run_param):
-    self.info = "SHOGUN_LINEARRIDGEREGRESSION ("  + str(method_param) +  ")"
+    self.info = f"SHOGUN_LINEARRIDGEREGRESSION ({str(method_param)})"
 
     # Assemble run model parameter.
     self.data = load_dataset(method_param["datasets"], ["csv"])
@@ -126,9 +126,7 @@ class SHOGUN_LINEARRIDGEREGRESSION(object):
         predictions = model.apply(self.test_feat).get_labels()
 
 
-    metric = {}
-    metric["runtime"] = totalTimer.ElapsedTime()
-
+    metric = {"runtime": totalTimer.ElapsedTime()}
     if len(self.data) == 3:
       metric['MSE'] = Metrics.SimpleMeanSquaredError(self.data[2], predictions)
 

@@ -43,7 +43,7 @@ class ELKI_KMEANS(object):
       self.cmd += ["-kmeans.k", str(method_param["clusters"])]
 
 
-    self.info = "ELKI_KMEANS (" + str(self.cmd) + ")"
+    self.info = f"ELKI_KMEANS ({self.cmd})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -63,9 +63,9 @@ class ELKI_KMEANS(object):
     pattern = re.compile(r""".*?algorithm[^\s]*?runtime:\s+(?P<total_time>\d+)\s*ms.*?""", re.VERBOSE|re.MULTILINE|re.DOTALL)
     match = pattern.match(self.output.decode())
 
-    if match.group("total_time").count(".") == 1:
-      metric["runtime"] = float(match.group("total_time")) / 1000.
+    if match["total_time"].count(".") == 1:
+      metric["runtime"] = float(match["total_time"]) / 1000.
     else:
-      metric["runtime"] = float(match.group("total_time").replace(",", ".")) / 1000.
+      metric["runtime"] = float(match["total_time"].replace(",", ".")) / 1000.
 
     return metric

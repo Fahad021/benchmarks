@@ -36,7 +36,7 @@ class WEKA_PCA(object):
       "weka.jar" + ":methods/weka" + " PCA -i " + dataset[0] + " " +
       options_str)
 
-    self.info = "WEKA_PCA (" + str(self.cmd) + ")"
+    self.info = f"WEKA_PCA ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -53,8 +53,7 @@ class WEKA_PCA(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric['runtime'] = timer["total_time"]
 
     return metric

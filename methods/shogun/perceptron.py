@@ -53,7 +53,7 @@ class SHOGUN_PERCEPTRON(object):
   Shogun.
   '''
   def __init__(self, method_param, run_param):
-    self.info = "SHOGUN_PERCEPTRON ("  + str(method_param) +  ")"
+    self.info = f"SHOGUN_PERCEPTRON ({str(method_param)})"
 
     # Assemble run model parameter.
     self.data = load_dataset(method_param["datasets"], ["csv"])
@@ -150,9 +150,7 @@ class SHOGUN_PERCEPTRON(object):
       if len(self.data) >= 2:
         predictions = model.apply(self.test_feat).get_labels()
 
-    metric = {}
-    metric["runtime"] = totalTimer.ElapsedTime()
-
+    metric = {"runtime": totalTimer.ElapsedTime()}
     if len(self.data) >= 2:
       predictions = label_decoder(predictions, self.label_map)
 

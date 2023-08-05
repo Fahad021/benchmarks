@@ -22,8 +22,7 @@ class R_SVC(object):
     # Assemble run model parameter.
     self.dataset = method_param["datasets"]
 
-    self.build_opts = {}
-    self.build_opts["C"] = 1
+    self.build_opts = {"C": 1}
     if "c" in method_param:
       self.build_opts["C"] = float(method_param["c"])
     self.build_opts["epsilon"] = 0.1
@@ -34,7 +33,7 @@ class R_SVC(object):
       "svc.r" + " -t " + self.dataset[0] + " -T " + self.dataset[1] + " -c " +
       str(self.build_opts["C"]) + " -e " + str(self.build_opts["epsilon"]))
 
-    self.info = "R_SVC ("  + str(self.cmd) +  ")"
+    self.info = f"R_SVC ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -50,10 +49,12 @@ class R_SVC(object):
     except Exception as e:
       subprocess_exception(e, self.output)
 
-    metric = {}
-    metric["runtime"] = float(re.findall("(\d+\.\d+). *sec elapsed",
-      self.output.decode("utf-8"))[0])
-
+    metric = {
+        "runtime":
+        float(
+            re.findall("(\d+\.\d+). *sec elapsed",
+                       self.output.decode("utf-8"))[0])
+    }
     if len(self.dataset) == 3:
       predictions = load_dataset("predictions.csv", ["csv"])[0]
       predictions = predictions[1:]

@@ -24,14 +24,14 @@ class DLIBML_KMEANS(object):
     if "datasets" in method_param:
       dataset = check_dataset(method_param["datasets"], ["csv", "txt"])
       if len(dataset) == 2:
-        self.cmd += " -r " + dataset[0] + " -c " + dataset[1]
+        self.cmd += f" -r {dataset[0]} -c {dataset[1]}"
       elif len(dataset) == 1:
-        self.cmd += " -r " + dataset[0]
+        self.cmd += f" -r {dataset[0]}"
     if "clusters" in method_param:
       self.cmd += " -k " + str(method_param["clusters"])
     self.cmd += " -v"
 
-    self.info = "DLIBML_KMEANS (" + self.cmd + ")"
+    self.info = f"DLIBML_KMEANS ({self.cmd})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -48,8 +48,7 @@ class DLIBML_KMEANS(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric["runtime"] = timer["clustering"]
 
     return metric

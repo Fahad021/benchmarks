@@ -22,8 +22,7 @@ class R_RANDOMFOREST(object):
     # Assemble run model parameter.
     self.dataset = method_param["datasets"]
 
-    self.build_opts = {}
-    self.build_opts["n_estimators"] = 500
+    self.build_opts = {"n_estimators": 500}
     if "num_trees" in method_param:
       self.build_opts["n_estimators"] = int(method_param["num_trees"])
     self.build_opts["min_samples_leaf"] = 1
@@ -36,7 +35,7 @@ class R_RANDOMFOREST(object):
       " -n " + str(self.build_opts["n_estimators"]) + " -m " +
       str(self.build_opts["min_samples_leaf"]))
 
-    self.info = "R_RANDOMFOREST ("  + str(self.cmd) +  ")"
+    self.info = f"R_RANDOMFOREST ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -52,10 +51,12 @@ class R_RANDOMFOREST(object):
     except Exception as e:
       subprocess_exception(e, self.output)
 
-    metric = {}
-    metric["runtime"] = float(re.findall("(\d+\.\d+). *sec elapsed",
-      self.output.decode("utf-8"))[0])
-
+    metric = {
+        "runtime":
+        float(
+            re.findall("(\d+\.\d+). *sec elapsed",
+                       self.output.decode("utf-8"))[0])
+    }
     if len(self.dataset) == 3:
       predictions = load_dataset("predictions.csv", ["csv"])[0]
       predictions = predictions[1:]

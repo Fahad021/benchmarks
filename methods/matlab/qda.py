@@ -22,13 +22,13 @@ class MATLAB_QDA(object):
     # Assemble run command.
     self.dataset = method_param["datasets"]
 
-    inputCmd = "-t " + self.dataset[0] + " -T " + self.dataset[1]
+    inputCmd = f"-t {self.dataset[0]} -T {self.dataset[1]}"
     # Split the command using shell-like syntax.
     self.cmd = shlex.split(run_param["matlab_path"] +
       "matlab -nodisplay -nosplash -r \"try, QDA('" + inputCmd +
       "'), catch, exit(1), end, exit(0)\"")
 
-    self.info = "MATLAB_QDA (" + str(self.cmd) + ")"
+    self.info = f"MATLAB_QDA ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -45,8 +45,7 @@ class MATLAB_QDA(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric["runtime"] = timer["total_time"]
 
       if len(self.dataset) > 2:

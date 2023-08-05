@@ -35,11 +35,11 @@ class MATLAB_NMF(object):
     if "epsilon" in method_param:
       optionsStr += " -e " + str(method_param["epsilon"])
 
-    inputCmd = "-i " + self.dataset[0] + " " + optionsStr
+    inputCmd = f"-i {self.dataset[0]} {optionsStr}"
     self.cmd = shlex.split(run_param["matlab_path"] + "matlab -nodisplay -nosplash -r \"try, NMF('"
         + inputCmd + "'), catch, exit(1), end, exit(0)\"")
 
-    self.info = "MATLAB_NMF (" + str(self.cmd) + ")"
+    self.info = f"MATLAB_NMF ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -56,8 +56,7 @@ class MATLAB_NMF(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric["runtime"] = timer["total_time"]
 
     return metric

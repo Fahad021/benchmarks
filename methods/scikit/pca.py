@@ -22,16 +22,16 @@ This class implements the Principal Components Analysis benchmark.
 '''
 class SCIKIT_PCA(object):
   def __init__(self, method_param, run_param):
-    self.info = "SCIKIT_PCA ("  + str(method_param) +  ")"
+    self.info = f"SCIKIT_PCA ({str(method_param)})"
 
     # Assemble run model parameter.
     self.data = load_dataset(method_param["datasets"], ["csv"])
 
-    self.build_opts = {}
-    if "new_dimensionality" in method_param:
-      self.build_opts["n_components"] = int(method_param["new_dimensionality"])
-    else:
-      self.build_opts["n_components"] = self.data[0].shape[1]
+    self.build_opts = {
+        "n_components":
+        int(method_param["new_dimensionality"])
+        if "new_dimensionality" in method_param else self.data[0].shape[1]
+    }
     if "whiten" in method_param:
       self.build_opts["whiten"] = True
 
@@ -45,7 +45,4 @@ class SCIKIT_PCA(object):
       model.fit(self.data[0])
       score = model.transform(self.data[0])
 
-    metric = {}
-    metric["runtime"] = totalTimer.ElapsedTime()
-
-    return metric
+    return {"runtime": totalTimer.ElapsedTime()}

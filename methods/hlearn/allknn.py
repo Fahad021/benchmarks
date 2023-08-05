@@ -66,22 +66,18 @@ class ALLKNN(object):
   def RunMetrics(self, options):
     Log.Info("Perform ALLKNN.", self.verbose)
 
-    # This is not tested since HLearn has not worked in the current benchmarking
-    # setup, but, if you are trying to get it to work, this *should* work...
-    optionsStr = ""
-    if "k" in options:
-      optionsStr = "-k " + str(options["k"])
+    optionsStr = "-k " + str(options["k"]) if "k" in options else ""
     if "seed" in options:
-      optionsStr = optionsStr + " -s " + str(options["seed"])
+      optionsStr = f"{optionsStr} -s " + str(options["seed"])
 
     # If the dataset contains two files then the second file is the query file.
     # In this case we add this to the command line.
     if len(self.dataset) == 2:
-      cmd = shlex.split(self.path + "hlearn-allknn -r " + self.dataset[0] + " -q " +
-          self.dataset[1] + " " + optionsStr)
+      cmd = shlex.split(
+          f"{self.path}hlearn-allknn -r {self.dataset[0]} -q {self.dataset[1]} {optionsStr}"
+      )
     else:
-      cmd = shlex.split(self.path + "hlearn-allknn -r " + self.dataset +
-          " " + optionsStr)
+      cmd = shlex.split(f"{self.path}hlearn-allknn -r {self.dataset} {optionsStr}")
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.
@@ -92,7 +88,7 @@ class ALLKNN(object):
       Log.Warn(str(e))
       return -2
     except Exception as e:
-      Log.Fatal("Could not execute command: " + str(cmd))
+      Log.Fatal(f"Could not execute command: {str(cmd)}")
       return -1
 
     # Datastructure to store the results.
@@ -103,23 +99,23 @@ class ALLKNN(object):
 
     if timer != -1:
       metrics['Runtime'] = timer.mkShuffleMap + \
-                           timer.varshifting_data + \
-                           timer.tree_building + \
-                           timer.adopting + \
-                           timer.sorting_children + \
-                           timer.packing_reference_tree + \
-                           timer.caching_distances + \
-                           timer.computing_parFindNeighborMap + \
-                           timer.sorting_results
+                             timer.varshifting_data + \
+                             timer.tree_building + \
+                             timer.adopting + \
+                             timer.sorting_children + \
+                             timer.packing_reference_tree + \
+                             timer.caching_distances + \
+                             timer.computing_parFindNeighborMap + \
+                             timer.sorting_results
 
       metrics['TreeBuilding'] = timer.tree_building + \
-                                timer.adopting + \
-                                timer.sorting_children + \
-                                timer.packing_reference_tree + \
-                                timer.caching_distances
+                                  timer.adopting + \
+                                  timer.sorting_children + \
+                                  timer.packing_reference_tree + \
+                                  timer.caching_distances
 
       metrics['ComputingNeighbors'] = timer.computing_parFindNeighborMap + \
-                                      timer.sorting_results
+                                        timer.sorting_results
 
       Log.Info(("total time: %fs" % (metrics['Runtime'])), self.verbose)
 
@@ -148,12 +144,7 @@ class ALLKNN(object):
         .*?outputting\ neighbors.*?time=(?P<outputting_neighbors>.*?)s.*?
         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
 
-    match = pattern.match(data.decode())
-
-    if not match:
-      Log.Fatal("Can't parse the data: wrong format")
-      return -1
-    else:
+    if match := pattern.match(data.decode()):
       # Create a namedtuple and return the timer data.
       timer = collections.namedtuple("timer", ["mkShuffleMap",
                                                "varshifting_data",
@@ -167,14 +158,19 @@ class ALLKNN(object):
                                                "outputing_distance",
                                                "outputting_neighbors"])
 
-      return timer(float(match.group("mkShuffleMap")),
-                   float(match.group("varshifting_data")),
-                   float(match.group("tree_building")),
-                   float(match.group("adopting")),
-                   float(match.group("sorting_children")),
-                   float(match.group("packing_reference_tree")),
-                   float(match.group("caching_distances")),
-                   float(match.group("computing_parFindNeighborMap")),
-                   float(match.group("sorting_results")),
-                   float(match.group("outputing_distance")),
-                   float(match.group("outputting_neighbors")))
+      return timer(
+          float(match["mkShuffleMap"]),
+          float(match["varshifting_data"]),
+          float(match["tree_building"]),
+          float(match["adopting"]),
+          float(match["sorting_children"]),
+          float(match["packing_reference_tree"]),
+          float(match["caching_distances"]),
+          float(match["computing_parFindNeighborMap"]),
+          float(match["sorting_results"]),
+          float(match["outputing_distance"]),
+          float(match["outputting_neighbors"]),
+      )
+    else:
+      Log.Fatal("Can't parse the data: wrong format")
+      return -1

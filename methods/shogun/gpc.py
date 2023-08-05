@@ -70,7 +70,7 @@ class SHOGUN_GPC(object):
   Shogun.
   '''
   def __init__(self, method_param, run_param):
-    self.info = "SHOGUN_GPC (" + str(method_param) + ")"
+    self.info = f"SHOGUN_GPC ({str(method_param)})"
 
     #Assemble run model parameter.
     self.data = load_dataset(method_param["datasets"], ["csv"])
@@ -145,26 +145,26 @@ class SHOGUN_GPC(object):
       const = float(self.method_param["constant"])
 
     #Choosing a Distance Function required by some Kernels
-    if distance=="Euclidean":
-      distanceMethod = EuclideanDistance()
+    if distance == "Canberra":
+      distanceMethod = CanberraMetric()
 
-    elif distance=="Chi-Square":
+    elif distance == "Chi-Square":
       distanceMethod = ChiSquareDistance()
 
-    elif distance=="Tanimoto":
-      distanceMethod = TanimotoDistance()
+    elif distance == "Euclidean":
+      distanceMethod = EuclideanDistance()
 
-    elif distance=="Minkowski":
-      distanceMethod = MinkowskiMetric()
-
-    elif distance=="Manhattan":
-      distanceMethod = ManhattanMetric()
-
-    elif distance=="Jensen":
+    elif distance == "Jensen":
       distanceMethod = JensenMetric()
 
-    elif distance=="Canberra":
-      distanceMethod = CanberraMetric()
+    elif distance == "Manhattan":
+      distanceMethod = ManhattanMetric()
+
+    elif distance == "Minkowski":
+      distanceMethod = MinkowskiMetric()
+
+    elif distance == "Tanimoto":
+      distanceMethod = TanimotoDistance()
 
     else:
       raise ValueError("distance function not supported by the benchmarks")
@@ -173,33 +173,33 @@ class SHOGUN_GPC(object):
     totalTimer = Timer()
     with totalTimer:
 		#Choosing a Kernel for the Gaussian Process Classification
-      if kernel=="Gaussian":
-        kernelMethod = GaussianKernel(width)
-
-      elif kernel=="Polynomial":
-        kernelMethod = PolyKernel(cache_size, degree)
-
-      elif kernel=="Sigmoid":
-        kernelMethod = SigmoidKernel(cache_size, gamma, coef0)
-
-      elif kernel=="Bessel":
+      if kernel == "Bessel":
         kernelMethod = BesselKernel(cache_size, order, width,
           degree, distanceMethod)
 
-      elif kernel=="Power":
-        kernelMethod = PowerKernel(cache_size, degree, distanceMethod)
-
-      elif kernel=="Log":
-        kernelMethod = LogKernel(cache_size, degree, distanceMethod)
-
-      elif kernel=="Cauchy":
+      elif kernel == "Cauchy":
         kernelMethod = CauchyKernel(cache_size, sigma, distanceMethod)
 
-      elif kernel=="Constant":
+      elif kernel == "Constant":
         kernelMethod = ConstKernel(const)
 
-      elif kernel=="Diagonal":
+      elif kernel == "Diagonal":
         kernelMethod = DiagKernel(cache_size, const)
+
+      elif kernel == "Gaussian":
+        kernelMethod = GaussianKernel(width)
+
+      elif kernel == "Log":
+        kernelMethod = LogKernel(cache_size, degree, distanceMethod)
+
+      elif kernel == "Polynomial":
+        kernelMethod = PolyKernel(cache_size, degree)
+
+      elif kernel == "Power":
+        kernelMethod = PowerKernel(cache_size, degree, distanceMethod)
+
+      elif kernel == "Sigmoid":
+        kernelMethod = SigmoidKernel(cache_size, gamma, coef0)
 
       else:
         raise ValueError("kernel not supported by the benchmarks")
@@ -217,9 +217,7 @@ class SHOGUN_GPC(object):
       if len(self.data) >= 2:
         predictions = model.apply_multiclass(self.test_features).get_labels()
 
-    metric = {}
-    metric["runtime"] = totalTimer.ElapsedTime()
-
+    metric = {"runtime": totalTimer.ElapsedTime()}
     if len(self.data) >= 2:
       predictions = label_decoder(predictions, self.label_map)
 

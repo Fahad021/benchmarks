@@ -22,7 +22,7 @@ This class implements the independent component analysis benchmark.
 '''
 class SCIKIT_ICA(object):
   def __init__(self, method_param, run_param):
-    self.info = "SCIKIT_ICA ("  + str(method_param) +  ")"
+    self.info = f"SCIKIT_ICA ({str(method_param)})"
 
     # Assemble run model parameter.
     self.data = load_dataset(method_param["datasets"], ["csv"])
@@ -49,7 +49,4 @@ class SCIKIT_ICA(object):
       model = FastICA(**self.build_opts)
       ic = model.fit(self.data[0]).transform(self.data[0])
 
-    metric = {}
-    metric["runtime"] = totalTimer.ElapsedTime()
-
-    return metric
+    return {"runtime": totalTimer.ElapsedTime()}

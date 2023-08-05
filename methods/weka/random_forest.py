@@ -22,8 +22,7 @@ class WEKA_RANDOMFOREST(object):
     # Assemble run command.
     self.dataset = check_dataset(method_param["datasets"], ["arff"])
 
-    opts = {}
-    opts["minimum_leaf_size"] = 1
+    opts = {"minimum_leaf_size": 1}
     if "minimum_leaf_size" in method_param:
       opts["minimum_leaf_size"] = int(method_param["minimum_leaf_size"]);
 
@@ -31,7 +30,7 @@ class WEKA_RANDOMFOREST(object):
       "/weka.jar" + ":methods/weka" + " RANDOMFOREST -t " + self.dataset[0] +
       " -T " + self.dataset[1] + " -M " + str(opts["minimum_leaf_size"]) )
 
-    self.info = "WEKA_RANDOMFOREST (" + str(self.cmd) + ")"
+    self.info = f"WEKA_RANDOMFOREST ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -48,8 +47,7 @@ class WEKA_RANDOMFOREST(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric['runtime'] = timer["total_time"]
 
     if len(self.dataset) >= 3:

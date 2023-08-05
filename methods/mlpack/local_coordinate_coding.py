@@ -35,7 +35,7 @@ class MLPACK_LOCALCOORDINATECODING(object):
     self.cmd = shlex.split(run_param["mlpack_path"] +
       "mlpack_local_coordinate_coding -t " + self.dataset[0] + " -v " + options)
 
-    self.info = "MLPACK_LOCALCOORDINATECODING (" + str(self.cmd) + ")"
+    self.info = f"MLPACK_LOCALCOORDINATECODING ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -52,8 +52,7 @@ class MLPACK_LOCALCOORDINATECODING(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric["runtime"] = timer["total_time"] - timer["loading_data"]
 
     return metric

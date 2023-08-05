@@ -22,8 +22,7 @@ class MATLAB_LASSO(object):
     # Assemble run command.
     dataset = method_param["datasets"]
 
-    opts = {}
-    opts["tol"] = 1e-4
+    opts = {"tol": 0.0001}
     if "tolerance" in method_param:
       opts["tol"] = float(method_param["tolerance"])
     opts["max_iter"] = 1e5
@@ -33,15 +32,15 @@ class MATLAB_LASSO(object):
     if "alpha" in method_param:
       opts["alpha"] = float(method_param["alpha"])
 
-    inputCmd = "-t " + dataset[0] + " -T " + dataset[1] + " -m " + str(
-      opts["max_iter"]) + " -tol " + str(opts["tol"]) + " -a " + str(
-      opts["alpha"])
+    inputCmd = (
+        ((f"-t {dataset[0]} -T {dataset[1]} -m " + str(opts["max_iter"])) +
+         " -tol ") + str(opts["tol"]) + " -a ") + str(opts["alpha"])
 
     self.cmd = shlex.split(run_param["matlab_path"] +
       "matlab -nodisplay -nosplash -r \"try, LASSO('" + inputCmd +
       "'), catch, exit(1), end, exit(0)\"")
 
-    self.info = "MATLAB_LASSO (" + str(self.cmd) + ")"
+    self.info = f"MATLAB_LASSO ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -58,8 +57,7 @@ class MATLAB_LASSO(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric["runtime"] = timer["total_time"]
 
     return metric

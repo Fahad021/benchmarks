@@ -22,15 +22,14 @@ This class implements the Kernel Principal Components Analysis benchmark.
 '''
 class MLPY_KPCA(object):
   def __init__(self, method_param, run_param):
-    self.info = "MLPY_KPCA ("  + str(method_param) +  ")"
+    self.info = f"MLPY_KPCA ({str(method_param)})"
 
     # Assemble run model parameter.
     self.data = load_dataset(method_param["datasets"], ["csv"])
     if len(self.data) == 1:
       self.data = split_dataset(self.data[0])
 
-    self.build_opts = {}
-    self.build_opts["k"] = self.data[0].shape[1]
+    self.build_opts = {"k": self.data[0].shape[1]}
     if "new_dimensionality" in method_param:
       self.build_opts["k"] = int(method_param["new_dimensionality"])
 
@@ -60,6 +59,4 @@ class MLPY_KPCA(object):
       model.learn(kernel)
       out = model.transform(kernel, **self.build_opts)
 
-    metric = {}
-    metric["runtime"] = totalTimer.ElapsedTime()
-    return metric
+    return {"runtime": totalTimer.ElapsedTime()}

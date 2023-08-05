@@ -22,7 +22,7 @@ This class implements the Non-negative Matrix Factorization benchmark.
 '''
 class SCIKIT_NMF(object):
   def __init__(self, method_param, run_param):
-    self.info = "SCIKIT_NMF ("  + str(method_param) +  ")"
+    self.info = f"SCIKIT_NMF ({str(method_param)})"
 
     # Assemble run model parameter.
     self.data = load_dataset(method_param["datasets"], ["csv"])
@@ -49,7 +49,4 @@ class SCIKIT_NMF(object):
       W = model.fit_transform(self.data[0])
       H = model.components_
 
-    metric = {}
-    metric["runtime"] = totalTimer.ElapsedTime()
-
-    return metric
+    return {"runtime": totalTimer.ElapsedTime()}

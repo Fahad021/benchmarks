@@ -43,7 +43,7 @@ class SHOGUN_GMM(object):
   Shogun.
   '''
   def __init__(self, method_param, run_param):
-    self.info = "SHOGUN_GMM ("  + str(method_param) +  ")"
+    self.info = f"SHOGUN_GMM ({str(method_param)})"
 
     # Assemble run model parameter.
     self.data = load_dataset(method_param["datasets"], ["csv"])
@@ -104,7 +104,4 @@ class SHOGUN_GMM(object):
         model.train_smem(self.max_iter, self.max_cand, self.min_cov,
             self.max_em_iter, self.min_change)
 
-    metric = {}
-    metric["runtime"] = totalTimer.ElapsedTime()
-
-    return metric
+    return {"runtime": totalTimer.ElapsedTime()}

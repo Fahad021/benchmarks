@@ -31,7 +31,7 @@ class WEKA_KMEANS(object):
     self.cmd = shlex.split("java -classpath " + run_param["weka_path"] +
       "/weka.jar:methods/weka KMeans -i " + self.dataset[0] + " " + options)
 
-    self.info = "WEKA_KMEANS (" + str(self.cmd) + ")"
+    self.info = f"WEKA_KMEANS ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -48,8 +48,7 @@ class WEKA_KMEANS(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric['runtime'] = timer["total_time"]
 
     return metric

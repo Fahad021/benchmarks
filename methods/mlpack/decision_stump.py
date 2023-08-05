@@ -28,7 +28,7 @@ class MLPACK_DECISIONSTUMP(object):
       "mlpack_decision_stump -t " + self.dataset[0] + " -T " +
       self.dataset[1] + " -v")
 
-    self.info = "MLPACK_DECISIONSTUMP (" + str(self.cmd) + ")"
+    self.info = f"MLPACK_DECISIONSTUMP ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 

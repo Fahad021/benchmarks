@@ -22,7 +22,7 @@ This class implements the K-Means Clustering benchmark.
 '''
 class SCIKIT_KMEANS(object):
   def __init__(self, method_param, run_param):
-    self.info = "SCIKIT_KMEANS ("  + str(method_param) +  ")"
+    self.info = f"SCIKIT_KMEANS ({str(method_param)})"
 
     # Assemble run model parameter.
     self.data = load_dataset(method_param["datasets"], ["csv"])
@@ -51,7 +51,4 @@ class SCIKIT_KMEANS(object):
       labels = kmeans.labels_
       centers = kmeans.cluster_centers_
 
-    metric = {}
-    metric["runtime"] = totalTimer.ElapsedTime()
-
-    return metric
+    return {"runtime": totalTimer.ElapsedTime()}

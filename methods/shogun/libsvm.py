@@ -75,7 +75,7 @@ class SHOGUN_LIBSVM(object):
   Shogun.
   '''
   def __init__(self, method_param, run_param):
-    self.info = "SHOGUN_LIBSVM ("  + str(method_param) +  ")"
+    self.info = f"SHOGUN_LIBSVM ({str(method_param)})"
 
     # Assemble run model parameter.
     self.data = load_dataset(method_param["datasets"], ["csv"])
@@ -208,7 +208,7 @@ class SHOGUN_LIBSVM(object):
       elif self.kernel == "Linear":
         kernelMethod = LinearKernel(self.train_feat, self.train_feat)
 
-      elif self.kernel == "Hyptan" or self.kernel == "Sigmoid":
+      elif self.kernel in ["Hyptan", "Sigmoid"]:
         kernelMethod = SigmoidKernel(self.train_feat, self.train_feat, self.cache_size,
             self.gamma, self.coef0)
 
@@ -239,9 +239,7 @@ class SHOGUN_LIBSVM(object):
       if len(self.data) >= 2:
         predictions = model.apply_multiclass(self.test_feat).get_labels()
 
-    metric = {}
-    metric["runtime"] = totalTimer.ElapsedTime()
-
+    metric = {"runtime": totalTimer.ElapsedTime()}
     if len(self.data) >= 2:
       predictions = label_decoder(predictions, self.label_map)
 

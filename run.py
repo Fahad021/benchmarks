@@ -65,7 +65,7 @@ def run(config, library, methods, loglevel):
           dataset if isinstance(dataset, (list,)) else [dataset]
 
         if "metric" in values["run"]:
-          logging.info('Script: %s' % (values["script"]))
+          logging.info(f'Script: {values["script"]}')
 
           module = Loader.ImportModuleFromPath(values["script"])
           method_call = getattr(module, name)
@@ -74,11 +74,11 @@ def run(config, library, methods, loglevel):
             @timeout_decorator.timeout(base_param["timeout"], use_signals=True)
             def run_timeout_wrapper():
               instance = method_call(method_param, base_param)
-              logging.info('Run: %s' % (str(instance)))
+              logging.info(f'Run: {str(instance)}')
 
               # Run the metric method.
               result = instance.metric()
-              logging.info('Metric: %s' % (str(result)))
+              logging.info(f'Metric: {str(result)}')
 
               # Pass the result to the driver.
               if driver:
@@ -90,9 +90,9 @@ def run(config, library, methods, loglevel):
 
             run_timeout_wrapper()
           except timeout_decorator.TimeoutError as e:
-            logging.warning('Timeout: %s' % (str(e)))
+            logging.warning(f'Timeout: {str(e)}')
           except Exception as e:
-            logging.error('Exception: %s' % (str(e)))
+            logging.error(f'Exception: {str(e)}')
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(
@@ -109,7 +109,5 @@ if __name__ == '__main__':
     help='Loglevel [CRITICAL, ERROR, WARNING, INFO, DEBUG, NONE].',
     required=False)
 
-  args = parser.parse_args()
-
-  if args:
+  if args := parser.parse_args():
     run(args.config, args.lib, args.methods, args.loglevel)

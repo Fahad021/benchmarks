@@ -22,14 +22,13 @@ This class implements the Perceptron benchmark.
 '''
 class MLPY_PERCEPTRON(object):
   def __init__(self, method_param, run_param):
-    self.info = "MLPY_PERCEPTRON ("  + str(method_param) +  ")"
+    self.info = f"MLPY_PERCEPTRON ({str(method_param)})"
 
     # Assemble run model parameter.
     self.data = load_dataset(method_param["datasets"], ["csv"])
     self.data_split = split_dataset(self.data[0])
 
-    self.build_opts = {}
-    self.build_opts["alpha"] = 0.1
+    self.build_opts = {"alpha": 0.1}
     if "alpha" in method_param:
       self.build_opts["alpha"] = method_param["alpha"]
     self.build_opts["thr"] = 0.05
@@ -51,9 +50,7 @@ class MLPY_PERCEPTRON(object):
       if len(self.data) >= 2:
         predictions = model.pred(self.data[1])
 
-    metric = {}
-    metric["runtime"] = totalTimer.ElapsedTime()
-
+    metric = {"runtime": totalTimer.ElapsedTime()}
     if len(self.data) == 3:
       confusionMatrix = Metrics.ConfusionMatrix(self.data[2], predictions)
       metric['ACC'] = Metrics.AverageAccuracy(confusionMatrix)

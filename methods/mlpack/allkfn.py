@@ -43,7 +43,7 @@ class MLPACK_ALLKFN(object):
       self.cmd = shlex.split(run_param["mlpack_path"] + "mlpack_kfn -r " +
         self.dataset[0] + " -v -n neighbors.csv -d distances.csv " + options)
 
-    self.info = "MLPACK_ALLKFN (" + str(self.cmd) + ")"
+    self.info = f"MLPACK_ALLKFN ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -56,10 +56,7 @@ class MLPACK_ALLKFN(object):
         re.MULTILINE|re.DOTALL)
 
     match = pattern.match(data)
-    if not match:
-      return None
-
-    return int(match.group("num_base_cases"))
+    return None if not match else int(match["num_base_cases"])
 
   def metric(self):
     try:
@@ -71,14 +68,12 @@ class MLPACK_ALLKFN(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric["runtime"] = timer["total_time"] - timer["loading_data"] - timer["saving_data"]
       metric["tree_building"] = timer["tree_building"]
       metric["computing_neighbors"] = timer["computing_neighbors"]
 
-    base_cases = self.parse_num_base_cases(self.output)
-    if base_cases:
+    if base_cases := self.parse_num_base_cases(self.output):
       metric["base_cases"] = base_cases
 
     return metric

@@ -32,7 +32,7 @@ class MLPACK_DTC(object):
         "mlpack_decision_tree -t " + self.dataset[0] + " -T " +
         self.dataset[1] + " -v " + " -p " + " mlpack_dct_predict.csv")
 
-    self.info = "MLPACK_DTC (" + str(self.cmd) + ")"
+    self.info = f"MLPACK_DTC ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -49,8 +49,7 @@ class MLPACK_DTC(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric["runtime"] = timer["total_time"] - timer["loading_data"] - timer["saving_data"]
 
     if len(self.dataset) >= 3:

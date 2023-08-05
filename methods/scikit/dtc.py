@@ -22,7 +22,7 @@ This class implements the Decision Tree Classifier benchmark.
 '''
 class SCIKIT_DTC(object):
   def __init__(self, method_param, run_param):
-    self.info = "SCIKIT_DTC ("  + str(method_param) +  ")"
+    self.info = f"SCIKIT_DTC ({str(method_param)})"
 
     # Assemble run model parameter.
     self.data = load_dataset(method_param["datasets"], ["csv"])
@@ -58,9 +58,7 @@ class SCIKIT_DTC(object):
       model.fit(self.data_split[0], self.data_split[1])
       predictions = model.predict(self.data[1])
 
-    metric = {}
-    metric["runtime"] = totalTimer.ElapsedTime()
-
+    metric = {"runtime": totalTimer.ElapsedTime()}
     if len(self.data) == 3:
       confusionMatrix = Metrics.ConfusionMatrix(self.data[2], predictions)
       metric['ACC'] = Metrics.AverageAccuracy(confusionMatrix)

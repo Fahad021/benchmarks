@@ -28,9 +28,9 @@ class ANN_ALLKNN(object):
       # file.
       dataset = check_dataset(method_param["datasets"], ["csv", "txt"])
       if len(dataset) == 2:
-        self.cmd += " -r " + dataset[0] + " -q " + dataset[1]
+        self.cmd += f" -r {dataset[0]} -q {dataset[1]}"
       elif len(dataset) == 1:
-        self.cmd += " -r " + dataset[0]
+        self.cmd += f" -r {dataset[0]}"
     if "k" in method_param:
       self.cmd += " -k " + str(method_param["k"])
     if "seed" in method_param:
@@ -39,7 +39,7 @@ class ANN_ALLKNN(object):
       self.cmd += " -e " + str(method_param["epsilon"])
     self.cmd += " -v"
 
-    self.info = "ANN_ALLKNN (" + self.cmd + ")"
+    self.info = f"ANN_ALLKNN ({self.cmd})"
     self.timeout = run_param["timeout"]
 
   def __str__(self):
@@ -55,8 +55,7 @@ class ANN_ALLKNN(object):
       raise Exception(str(e))
 
     metric = {}
-    timer = parse_timer(output)
-    if timer:
+    if timer := parse_timer(output):
       metric["runtime"] = timer["tree_building"] + timer["computing_neighbors"]
       metric["tree_building"] = timer["tree_building"]
       metric["computing_neighbors"] = timer["computing_neighbors"]

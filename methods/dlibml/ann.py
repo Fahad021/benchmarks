@@ -24,9 +24,9 @@ class DLIBML_ANN(object):
     if "datasets" in method_param:
       dataset = check_dataset(method_param["datasets"], ["csv", "txt"])
       if len(dataset) == 2:
-        self.cmd += " -r " + dataset[0] + " -q " + dataset[1]
+        self.cmd += f" -r {dataset[0]} -q {dataset[1]}"
       elif len(dataset) == 1:
-        self.cmd += " -r " + dataset[0]
+        self.cmd += f" -r {dataset[0]}"
     if "k" in method_param:
       self.cmd += " -k " + str(method_param["k"])
     if "num" in method_param:
@@ -35,7 +35,7 @@ class DLIBML_ANN(object):
       self.cmd += " -s " + str(method_param["sample_pct"])
     self.cmd += " -v"
 
-    self.info = "DLIBML_ANN (" + self.cmd + ")"
+    self.info = f"DLIBML_ANN ({self.cmd})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -52,8 +52,7 @@ class DLIBML_ANN(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric["runtime"] = timer["Nearest_Neighbors"]
 
     return metric

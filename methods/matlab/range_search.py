@@ -34,16 +34,15 @@ class MATLAB_RANGESEARCH(object):
       optionsStr += " -N"
 
     if len(self.dataset) == 2:
-      inputCmd = "-r " + self.dataset[0] + " -q " + self.dataset[1] + " " \
-          + optionsStr
+      inputCmd = f"-r {self.dataset[0]} -q {self.dataset[1]} {optionsStr}"
     else:
-      inputCmd = "-r " + self.dataset[0] + " " + optionsStr
+      inputCmd = f"-r {self.dataset[0]} {optionsStr}"
 
     self.cmd = shlex.split(run_param["matlab_path"] +
       "matlab -nodisplay -nosplash -r \"try, " +
       "RANGESEARCH('"  + inputCmd + "'), catch, exit(1), end, exit(0)\"")
 
-    self.info = "MATLAB_RANGESEARCH (" + str(self.cmd) + ")"
+    self.info = f"MATLAB_RANGESEARCH ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -60,8 +59,7 @@ class MATLAB_RANGESEARCH(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric["runtime"] = timer["total_time"]
 
     return metric

@@ -25,7 +25,7 @@ class R_LINEARREGRESSION(object):
     self.cmd = shlex.split("libraries/bin/Rscript " + run_param["r_path"] +
       "linear_regression.r" + " -t " + self.dataset[0])
 
-    self.info = "R_LINEARREGRESSION ("  + str(self.cmd) +  ")"
+    self.info = f"R_LINEARREGRESSION ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -41,10 +41,12 @@ class R_LINEARREGRESSION(object):
     except Exception as e:
       subprocess_exception(e, self.output)
 
-    metric = {}
-    metric["runtime"] = float(re.findall("(\d+\.\d+). *sec elapsed",
-      self.output.decode("utf-8"))[0])
-
+    metric = {
+        "runtime":
+        float(
+            re.findall("(\d+\.\d+). *sec elapsed",
+                       self.output.decode("utf-8"))[0])
+    }
     if len(self.dataset) == 3:
       predictions = load_dataset("predictions.csv", ["csv"])[0]
       predictions = predictions[1:]

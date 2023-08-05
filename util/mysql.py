@@ -52,9 +52,7 @@ class Driver(object):
     with self.connection:
       command = "SELECT build FROM results ORDER BY build DESC"
       self.cursor.execute(command)
-      result = self.cursor.fetchall()
-
-      if result:
+      if result := self.cursor.fetchall():
         self.build = int(result[0][0]) + 1
 
   def update(self, library, method, datasets, method_param, base_param, result):
@@ -62,10 +60,7 @@ class Driver(object):
     with self.connection:
       command = "INSERT INTO results VALUES (NULL,%s,%s,%s,%s,%s,%s,%s,%s)"
 
-      runtime = 0
-      if "runtime" in result:
-        runtime = result["runtime"]
-
+      runtime = result["runtime"] if "runtime" in result else 0
       self.cursor.execute(command % ('?', '?', '?', '?', '?', '?', '?', '?'),
         (self.build, str(library), str(datasets), str(method),
         str(method_param), str(base_param), runtime, str(result)))

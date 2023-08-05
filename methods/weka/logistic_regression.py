@@ -33,7 +33,7 @@ class WEKA_LOGISTICREGRESSION(object):
       "/weka.jar" + ":methods/weka" + " LogisticRegression -t " +
       self.dataset[0] + " -T " + self.dataset[1] + options)
 
-    self.info = "WEKA_LOGISTICREGRESSION (" + str(self.cmd) + ")"
+    self.info = f"WEKA_LOGISTICREGRESSION ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -50,8 +50,7 @@ class WEKA_LOGISTICREGRESSION(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric['runtime'] = timer["total_time"]
 
     if len(self.dataset) >= 3:

@@ -43,11 +43,7 @@ class Loader(object):
     # Remove the .py suffix.
     scriptName = os.path.basename(path)
 
-    if scriptName.endswith(".py"):
-      modName = scriptName[:-3]
-    else:
-      modName = scriptName
-
+    modName = scriptName[:-3] if scriptName.endswith(".py") else scriptName
     fileHandle = None
     try:
       tup = imp.find_module(modName, [destinationPath])
@@ -97,8 +93,8 @@ def parse_mlpack_timer(data):
     if timer_start == True and line.endswith("s"):
       splits = line.split(" ")
       if len(splits) >= 2:
-        timer_name = splits[len(splits) - 2][0:-1]
-        timer_value = splits[len(splits) - 1][0:-1]
+        timer_name = splits[len(splits) - 2][:-1]
+        timer_value = splits[len(splits) - 1][:-1]
         if "," in timer_value:
           timer_value.replace(',', '.')
 
@@ -120,8 +116,8 @@ def parse_weka_timer(data):
     if timer_start == True and line.endswith("s"):
       splits = line.split(" ")
       if len(splits) >= 2:
-        timer_name = splits[len(splits) - 2][0:-1]
-        timer_value = splits[len(splits) - 1][0:-1]
+        timer_name = splits[len(splits) - 2][:-1]
+        timer_value = splits[len(splits) - 1][:-1]
         if "," in timer_value:
           timer_value.replace(',', '.')
 
@@ -138,8 +134,8 @@ def parse_matlab_timer(data):
     if "INFO" in line:
       splits = line.split(" ")
       if len(splits) >= 2:
-        timer_name = splits[len(splits) - 2][0:-1]
-        timer_value = splits[len(splits) - 1][0:-1]
+        timer_name = splits[len(splits) - 2][:-1]
+        timer_value = splits[len(splits) - 1][:-1]
         timer[timer_name] = float(timer_value)
 
   return timer
@@ -164,39 +160,30 @@ def add_arff_header(data, new_data):
   # Extract the dataset name.
   relationName = os.path.splitext(os.path.basename(data))[0].split('_')[0]
 
-  # Read the first line to count the attributes.
-  fid = open(data)
-  head = [next(fid) for x in range(1)]
-  fid.close()
-
+  with open(data) as fid:
+    head = [next(fid) for _ in range(1)]
   # We can convert files with ' ' and ',' as seperator.
   count = max(head[0].count(","), head[0].count(" ")) + 1
 
-  # Write the arff header to the new file.
-  nfid = open(new_data, "a")
-  nfid.write("@relation " + relationName + "\n\n")
-  for i in range(count):
-    nfid.write("@attribute " + data + "_dim" + str(i) + " NUMERIC\n")
-  nfid.write("\n@data\n")
+  with open(new_data, "a") as nfid:
+    nfid.write(f"@relation {relationName}" + "\n\n")
+    for i in range(count):
+      nfid.write(f"@attribute {data}_dim{str(i)}" + " NUMERIC\n")
+    nfid.write("\n@data\n")
 
-  # Append the data for the given file to the new arff file.
-  fid = open(data, "r")
-  while True:
-    line = fid.read(65536)
-    if line:
-      nfid.write(line)
-    else:
-      break
-
-  fid.close()
-  nfid.close()
+    with open(data, "r") as fid:
+      while True:
+        if line := fid.read(65536):
+          nfid.write(line)
+        else:
+          break
 
 '''
 Pretty subprocess exception output.
 '''
 def subprocess_exception(e, output):
   if output:
-    raise Exception(str(e) + " -- " + output.decode("utf-8"))
+    raise Exception(f"{str(e)} -- " + output.decode("utf-8"))
   else:
     raise Exception(str(e))
 
@@ -242,14 +229,15 @@ def load_dataset(datasets, support):
   if len(datasets) == 1 and "csv" in support:
       return (np.genfromtxt(datasets[0], delimiter=','),)
   if len(datasets) == 2 and "csv" in support:
-      result = (np.genfromtxt(datasets[0], delimiter=','),
-                np.genfromtxt(datasets[1], delimiter=','))
-      return result
+    return np.genfromtxt(datasets[0],
+                         delimiter=','), np.genfromtxt(datasets[1],
+                                                       delimiter=',')
   if len(datasets) == 3 and "csv" in support:
-      result = (np.genfromtxt(datasets[0], delimiter=','),
-                np.genfromtxt(datasets[1], delimiter=','),
-                np.genfromtxt(datasets[2], delimiter=','))
-      return result
+    return (
+        np.genfromtxt(datasets[0], delimiter=','),
+        np.genfromtxt(datasets[1], delimiter=','),
+        np.genfromtxt(datasets[2], delimiter=','),
+    )
 
 '''
 Check if the specified dataset exists.
@@ -258,35 +246,28 @@ def check_dataset(datasets, support):
   if isinstance(datasets, str):
     datasets = [datasets]
 
-  d_idx = 0
-  for d in datasets:
+  for d_idx, d in enumerate(datasets):
     if not os.path.exists(d):
-      raise Exception("file  " + str(d) + " not found.")
+      raise Exception(f"file  {str(d)} not found.")
     extension = os.path.splitext(d)[1][1:]
 
     check = False
     for s in support:
-      data_supported = d[0:len(d) - len(extension)] + s
+      data_supported = d[:len(d) - len(extension)] + s
       ex = s
       if os.path.isfile(data_supported):
         check = True
         break
 
-    if not check:
-      if ex == "arff":
-        add_arff_header(d, data_supported)
-        datasets[d_idx] = data_supported
-      else:
-        if os.path.isfile(data_supported):
-          datasets[d_idx] = data_supported
-        else:
-          raise Exception("No conversion possible.")
-
-    elif datasets[d_idx] not in data_supported:
+    if (not check and ex != "arff" and os.path.isfile(data_supported)
+        or check and datasets[d_idx] not in data_supported):
       datasets[d_idx] = data_supported
+    elif not check and ex != "arff" and not os.path.isfile(data_supported):
+      raise Exception("No conversion possible.")
 
-    d_idx += 1
-
+    elif not check:
+      add_arff_header(d, data_supported)
+      datasets[d_idx] = data_supported
   return datasets
 
 
@@ -294,7 +275,7 @@ def check_dataset(datasets, support):
 Split the train labels from the given train dataset.
 '''
 def split_dataset(dataset):
-  if isinstance(dataset, (list,)) or isinstance(dataset, (tuple,)):
+  if isinstance(dataset, (list, tuple)):
     dataset = dataset[0]
 
   return (dataset[:,:-1], dataset[:, (dataset.shape[1] - 1)])
@@ -435,18 +416,10 @@ class Metrics(object):
   def PrecisionForAClass(class_i,CM):
     l=len(CM)
     truePositives = CM[class_i][class_i]
-    falsePositives = 0
-    for j in range(l):
-        falsePositives+=CM[j][class_i]
+    falsePositives = sum(CM[j][class_i] for j in range(l))
     falsePositives-=truePositives
     totalPositives = truePositives + falsePositives
-    if totalPositives != 0:
-      precision = truePositives/totalPositives
-    else:
-      #The class is not relevant (no predictions in this class)
-      #All instances predicted as negative, no spurious cases
-      precision = 1
-    return precision
+    return truePositives/totalPositives if totalPositives != 0 else 1
 
   '''
   @param class_i - Index of the class in the confusion matrix
@@ -457,15 +430,12 @@ class Metrics(object):
   '''
   @staticmethod
   def RecallForAClass(class_i,CM):
-     l=len(CM)
-     truePositives = CM[class_i][class_i]
-     falseNegatives = 0
-     for j in range(l):
-         falseNegatives+=CM[class_i][j]
-     falseNegatives-=truePositives
-     total = truePositives + falseNegatives
-     recall = truePositives/total
-     return recall
+    l=len(CM)
+    truePositives = CM[class_i][class_i]
+    falseNegatives = sum(CM[class_i][j] for j in range(l))
+    falseNegatives-=truePositives
+    total = truePositives + falseNegatives
+    return truePositives/total
 
   '''
   @param CM - The confusion matrix
@@ -478,18 +448,14 @@ class Metrics(object):
   @staticmethod
   def AvgPrecision(CM):
     l=len(CM)
-    avgPrecision = 0
-    for i in range(l):
-        avgPrecision+=Metrics.PrecisionForAClass(i,CM)
+    avgPrecision = sum(Metrics.PrecisionForAClass(i,CM) for i in range(l))
     avgPrecision = avgPrecision/l
     return avgPrecision
 
   @staticmethod
   def AvgRecall(CM):
     l=len(CM)
-    avgRecall = 0
-    for i in range(l):
-        avgRecall+=Metrics.RecallForAClass(i,CM)
+    avgRecall = sum(Metrics.RecallForAClass(i,CM) for i in range(l))
     avgRecall = avgRecall/l
     return avgRecall
 
@@ -503,28 +469,22 @@ class Metrics(object):
     l = len(CM)
     precClass = Metrics.PrecisionForAClass(class_i,CM)
     recClass = Metrics.RecallForAClass(class_i,CM)
-    if (precClass + recClass) != 0:
-      fMeasure = 2*precClass*recClass/(precClass+recClass)
-    else:
-      #Took care of the edge case here!
-      truePositives = CM[class_i][class_i]
-      falsePositives = 0
-      for j in range(l):
-        falsePositives+=CM[j][class_i]
-      falsePositives-=truePositives
-      falseNegatives=0
-      for j in range(l):
-        falseNegatives+=CM[class_i][j]
-      falseNegatives-=truePositives
-      trueNegatives=0
-      #calculate trueNegatives
-      for i in range(l):
-        if i!=class_i:
-          for j in range(l):
-            trueNegatives+=CM[i][j]
-          trueNegatives-=CM[i][class_i]
-      fMeasure = 2*truePositives / (2*truePositives + falsePositives + falseNegatives)
-    return fMeasure
+    if precClass + recClass != 0:
+      return 2*precClass*recClass/(precClass+recClass)
+    #Took care of the edge case here!
+    truePositives = CM[class_i][class_i]
+    falsePositives = sum(CM[j][class_i] for j in range(l))
+    falsePositives-=truePositives
+    falseNegatives = sum(CM[class_i][j] for j in range(l))
+    falseNegatives-=truePositives
+    trueNegatives=0
+    #calculate trueNegatives
+    for i in range(l):
+      if i!=class_i:
+        for j in range(l):
+          trueNegatives+=CM[i][j]
+        trueNegatives-=CM[i][class_i]
+    return 2*truePositives / (2*truePositives + falsePositives + falseNegatives)
 
 
   '''
@@ -535,9 +495,7 @@ class Metrics(object):
   @staticmethod
   def AvgFMeasure(CM):
     l=len(CM)
-    avgF=0
-    for i in range(l):
-        avgF+=Metrics.FMeasureClass(i,CM)
+    avgF = sum(Metrics.FMeasureClass(i,CM) for i in range(l))
     avgF = avgF/l
     return avgF
 
@@ -564,8 +522,7 @@ class Metrics(object):
       for j in range(l):
         total = total + CM[i][j]
     tgt = tgt/total
-    lift = pgt/tgt
-    return lift
+    return pgt/tgt
 
 
   '''
@@ -578,10 +535,8 @@ class Metrics(object):
   '''
   @staticmethod
   def LiftMultiClass(CM):
-    AvgLift=0
     l=len(CM)
-    for i in range(l):
-      AvgLift+=Metrics.LiftForAClass(i,CM)
+    AvgLift = sum(Metrics.LiftForAClass(i,CM) for i in range(l))
     AvgLift/=l
     return AvgLift
 
@@ -598,13 +553,9 @@ class Metrics(object):
   def MatthewsCorrelationCoefficientClass(class_i, CM):
     l=len(CM)
     truePositives = CM[class_i][class_i]
-    falsePositives = 0
-    for j in range(l):
-      falsePositives+=CM[j][class_i]
+    falsePositives = sum(CM[j][class_i] for j in range(l))
     falsePositives-=truePositives
-    falseNegatives=0
-    for j in range(l):
-      falseNegatives+=CM[class_i][j]
+    falseNegatives = sum(CM[class_i][j] for j in range(l))
     falseNegatives-=truePositives
     trueNegatives=0
     #calculate trueNegatives
@@ -618,13 +569,7 @@ class Metrics(object):
                             (truePositives + falseNegatives)*
                             (trueNegatives + falsePositives)*
                             (trueNegatives + falseNegatives))
-    if Denominator != 0:
-      MCC = Numerator/Denominator
-    else:
-      #Class is not relevant (no predictions in this class)
-      #The limiting case.
-      MCC = 0
-    return MCC
+    return Numerator/Denominator if Denominator != 0 else 0
 
 
   '''
@@ -638,10 +583,8 @@ class Metrics(object):
   '''
   @staticmethod
   def MCCMultiClass(CM):
-    MCC=0
     l=len(CM)
-    for i in range(l):
-      MCC+=Metrics.MatthewsCorrelationCoefficientClass(i,CM)
+    MCC = sum(Metrics.MatthewsCorrelationCoefficientClass(i,CM) for i in range(l))
     MCC/=l
     return MCC
 
@@ -663,10 +606,8 @@ class Metrics(object):
     instances=len(Vec)
     trueVec=[]
     for i in range(instances):
-      vec=[]
-      for j in range(l):
-        vec.append(0)
-      for j in range(l):
+      vec = [0 for _ in range(l)]
+      for _ in range(l):
         vec[int(Vec[i])-1]=1
       trueVec.append(vec)
     #trueArray : 2D numpy array after converting trueVec
@@ -685,11 +626,8 @@ class Metrics(object):
     quadraticLoss=np.array(quadraticLoss)
     #Divide the total squared loss for each instance by the number of classes
     quadraticLoss = quadraticLoss/l
-    totalLoss=0
-    for i in range(len(quadraticLoss)):
-      totalLoss+=quadraticLoss[i]
-    totalLoss = totalLoss/instances
-    return totalLoss
+    totalLoss = sum(quadraticLoss[i] for i in range(len(quadraticLoss)))
+    return totalLoss/instances
 
 
   '''
@@ -766,8 +704,7 @@ class Metrics(object):
   '''
   @staticmethod
   def GetActualLabels(truelabels):
-    labels=[]
-    labels.append(truelabels[0])
+    labels = [truelabels[0]]
     for i in range(len(truelabels)):
       if truelabels[i] not in labels:
         labels.append(truelabels[i])
@@ -785,10 +722,10 @@ class Metrics(object):
   def AvgMeanPredictiveInformation(CM, truelabels, predictedlabels):
     predicted=np.genfromtxt(predictedlabels, delimiter=',')
     actual=np.genfromtxt(truelabels, delimiter=',')
-    mpi=0
     all_labels = Metrics.GetActualLabels(actual)
-    for i in range(len(CM)):
-      mpi+=Metrics.MeanPredictiveInformationClass(all_labels[i], truelabels, predictedlabels)
+    mpi = sum(
+        Metrics.MeanPredictiveInformationClass(
+            all_labels[i], truelabels, predictedlabels) for i in range(len(CM)))
     mpi/=len(CM)
     return mpi
 
@@ -801,10 +738,10 @@ class Metrics(object):
   '''
   @staticmethod
   def AvgMPIArray(CM, truelabels, predictedlabels):
-    mpi=0
     all_labels = Metrics.GetActualLabels(truelabels)
-    for i in range(len(CM)):
-      mpi+=Metrics.MPIArrayClass(all_labels[i], truelabels, predictedlabels)
+    mpi = sum(
+        Metrics.MPIArrayClass(all_labels[i], truelabels, predictedlabels)
+        for i in range(len(CM)))
     mpi/=len(CM)
     return mpi
 

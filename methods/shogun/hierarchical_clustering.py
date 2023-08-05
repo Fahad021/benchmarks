@@ -50,7 +50,7 @@ class SHOGUN_HIERARCHICALCLUSTERING(object):
   Shougn.
   '''
   def __init__(self, method_param, run_param):
-    self.info = "SHOGUN_HIERARCHICALCLUSTERING ("  + str(method_param) +  ")"
+    self.info = f"SHOGUN_HIERARCHICALCLUSTERING ({str(method_param)})"
 
     # Assemble run model parameter.
     self.data = load_dataset(method_param["datasets"], ["csv"])
@@ -127,8 +127,7 @@ class SHOGUN_HIERARCHICALCLUSTERING(object):
     merge_distances = model.get_merge_distances()
     cluster_pairs = model.get_cluster_pairs()
 
-    metric = {}
-    metric["runtime"] = totalTimer.ElapsedTime()
+    metric = {"runtime": totalTimer.ElapsedTime()}
     metric["Merge distances between clusters"] = str(merge_distances)
     metric["Cluster pairings"] = str(cluster_pairs)
 

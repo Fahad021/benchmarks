@@ -32,7 +32,7 @@ class MLPACK_PERCEPTRON(object):
       self.dataset[0] + " -T " + self.dataset[1] + " -v " + options +
       " -o output.csv")
 
-    self.info = "MLPACK_PERCEPTRON (" + str(self.cmd) + ")"
+    self.info = f"MLPACK_PERCEPTRON ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -49,8 +49,7 @@ class MLPACK_PERCEPTRON(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric["runtime"] = timer["total_time"] - timer["loading_data"] - timer["saving_data"]
       metric["training"] = timer["training"]
       metric["testing"] = timer["testing"]

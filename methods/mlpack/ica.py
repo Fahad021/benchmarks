@@ -27,7 +27,7 @@ class MLPACK_ICA(object):
     self.cmd = shlex.split(run_param["mlpack_path"] + "mlpack_radical -i " +
       self.dataset[0] + " -v -o output_ic.csv -u output_unmixing.csv")
 
-    self.info = "MLPACK_ICA (" + str(self.cmd) + ")"
+    self.info = f"MLPACK_ICA ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -44,8 +44,7 @@ class MLPACK_ICA(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric["runtime"] = timer["total_time"] - timer["loading_data"] - timer["saving_data"]
 
     return metric

@@ -41,7 +41,7 @@ class MLPACK_RANGESEARCH(object):
         "mlpack_range_search -r " + self.dataset[0] +
         " -v -n neighbors.csv -d distances.csv " + options)
 
-    self.info = "MLPACK_RANGESEARCH (" + str(self.cmd) + ")"
+    self.info = f"MLPACK_RANGESEARCH ({str(self.cmd)})"
     self.timeout = run_param["timeout"]
     self.output = None
 
@@ -58,8 +58,7 @@ class MLPACK_RANGESEARCH(object):
       subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(self.output)
-    if timer:
+    if timer := parse_timer(self.output):
       metric["runtime"] = timer["total_time"] - timer["loading_data"]
 
     return metric

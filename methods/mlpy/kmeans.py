@@ -22,7 +22,7 @@ This class implements the K-Means Clustering benchmark.
 '''
 class MLPY_KMEANS(object):
   def __init__(self, method_param, run_param):
-    self.info = "MLPY_KMEANS ("  + str(method_param) +  ")"
+    self.info = f"MLPY_KMEANS ({str(method_param)})"
 
     # Assemble run model parameter.
     self.data = load_dataset(method_param["datasets"], ["csv"])
@@ -43,6 +43,4 @@ class MLPY_KMEANS(object):
     with totalTimer:
       model = mlpy.kmeans(self.data[0], **self.build_opts)
 
-    metric = {}
-    metric["runtime"] = totalTimer.ElapsedTime()
-    return metric
+    return {"runtime": totalTimer.ElapsedTime()}
